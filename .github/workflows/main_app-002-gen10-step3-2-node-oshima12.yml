@@ -37,6 +37,8 @@ jobs:
           mkdir -p deploy/.next/static
           cp -r ./.next/standalone/* ./deploy
           cp -r ./.next/static/* ./deploy/.next/static
+          cp ./.next/BUILD_ID ./deploy/.next/
+          cp ./.next/required-server-files.json ./deploy/.next/
           cp package.json ./deploy/
 
       - name: Zip artifact for deployment
