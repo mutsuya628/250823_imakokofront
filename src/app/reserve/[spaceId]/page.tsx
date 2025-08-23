@@ -39,7 +39,6 @@ export default function ReservePage({
 }) {
   const { spaceId } = React.use(params);
   const router = useRouter();
-  //const [data, setData] = useState<any>(null);
   const [data, setData] = useState<ReserveData | null>(null);
   const [planCode, setPlanCode] = useState(""); // ← 初期は空
   const [startDate, setStartDate] = useState(today()); // ← 今日を初期セット
@@ -49,7 +48,7 @@ export default function ReservePage({
   const [error, setError] = useState<string | null>(null); // ← エラー表示用
 
   useEffect(() => {
-    getSpace(spaceId).then((d) => {
+    getSpace(spaceId).then((d: ReserveData) => {
       setData(d);
       // スペースが持っている最初のプランを初期選択
       const first = d?.plans?.[0]?.plan_code ?? "DAY";

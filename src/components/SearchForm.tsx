@@ -35,7 +35,7 @@ export default function SearchForm({ onResults }: { onResults: (r: Result[]) => 
   const [startDate, setStartDate] = useState<string>('');
   const [units, setUnits] = useState<number>(1);
   const [maxPrice, setMaxPrice] = useState<number|''>('');
-  //const [minWifi, setMinWifi] = useState<number|''>('');
+  const [minWifi, setMinWifi] = useState<string>('');
   const [privateRoom, setPrivateRoom] = useState(false);
   const [category, setCategory] = useState<string>('');
 
@@ -79,10 +79,16 @@ export default function SearchForm({ onResults }: { onResults: (r: Result[]) => 
         <label className="block text-sm mb-1">最大合計料金（円）</label>
         <input type="number" min={0} className="w-full border rounded px-3 py-2" value={maxPrice} onChange={e=>setMaxPrice(e.target.value === '' ? '' : Number(e.target.value))} />
       </div>
-      {/* <div>
-        <label className="block text-sm mb-1">最低Wi-Fi速度（Mbps）</label>
-        <input type="number" min={0} className="w-full border rounded px-3 py-2" value={minWifi} onChange={e=>setMinWifi(e.target.value === '' ? '' : Number(e.target.value))} />
-      </div> */}
+      <div>
+        <label className="block text-sm mb-1">Wi-Fi速度（Mbps以上）</label>
+        <input
+          type="number"
+          className="w-full border rounded px-3 py-2"
+          value={minWifi}
+          onChange={e => setMinWifi(e.target.value)}
+          min={0}
+        />
+      </div>
       <div className="md:col-span-6 flex items-center gap-3">
         <label className="flex items-center gap-2"><input type="checkbox" checked={privateRoom} onChange={e=>setPrivateRoom(e.target.checked)} />個室必須</label>
         <select className="border rounded px-3 py-2" value={category} onChange={e=>setCategory(e.target.value)}>

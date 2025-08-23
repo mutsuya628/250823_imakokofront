@@ -57,6 +57,28 @@ type ReservationResult = {
   end_date: string;
   price_total: number;
   status: string;
+  error?: string; // ← 追加
+};
+
+type Space = {
+  name: string;
+  city: string;
+  address: string;
+  wifi_mbps: number;
+  private_room: boolean;
+  capacity_total: number;
+  category: string;
+};
+
+type Plan = {
+  plan_code: string;
+  plan_name: string;
+  price_tax_included: number;
+};
+
+type ReserveData = {
+  space: Space;
+  plans: Plan[];
 };
 
 export async function fetchPlanTypes(): Promise<PlanType[]> {
@@ -78,7 +100,7 @@ export async function searchSpaces(payload: SearchParams): Promise<SpaceResult[]
   return r.json();
 }
 
-export async function getSpace(spaceId: string): Promise<SpaceResult> {
+export async function getSpace(spaceId: string): Promise<ReserveData> {
   const r = await fetch(`${API_BASE}/api/spaces/${spaceId}`, { cache: 'no-store' });
   return r.json();
 }

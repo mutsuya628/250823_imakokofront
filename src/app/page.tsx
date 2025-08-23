@@ -13,8 +13,16 @@ type SpaceResult = {
   private_room: boolean;
   capacity_total: number;
   category: string;
-  // 必要に応じて他のフィールドも追加
+  plan: {
+    plan_code: string;
+    plan_name: string;
+    units: number;
+    start_date: string;
+    end_date: string;
+    price_total: number;
+  };
 };
+
 export default function Page() {
   const [results, setResults] = useState<SpaceResult[]>([]);
   return (
