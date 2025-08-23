@@ -3,9 +3,23 @@ import { useEffect, useState } from 'react';
 import { getPlanTypes, searchSpaces } from '@/lib/api';
 
 type Result = {
-  space_id: string; name: string; category: string; city: string; address: string;
-  wifi_mbps: number; private_room: boolean;
-  plan: { plan_code: string; plan_name: string; unit_days: number; units: number; price_total: number; start_date: string; end_date: string; }
+  space_id: string;
+  name: string;
+  category: string;
+  city: string;
+  address: string;
+  wifi_mbps: number;
+  private_room: boolean;
+  capacity_total: number; // ← 追加
+  plan: {
+    plan_code: string;
+    plan_name: string;
+    unit_days: number;
+    units: number;
+    price_total: number;
+    start_date: string;
+    end_date: string;
+  };
 };
 
 type PlanType = {
