@@ -21,7 +21,7 @@ export default function SearchForm({ onResults }: { onResults: (r: Result[]) => 
   const [startDate, setStartDate] = useState<string>('');
   const [units, setUnits] = useState<number>(1);
   const [maxPrice, setMaxPrice] = useState<number|''>('');
-  const [minWifi, setMinWifi] = useState<number|''>('');
+  //const [minWifi, setMinWifi] = useState<number|''>('');
   const [privateRoom, setPrivateRoom] = useState(false);
   const [category, setCategory] = useState<string>('');
 
