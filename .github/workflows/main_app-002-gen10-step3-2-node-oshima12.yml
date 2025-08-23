@@ -40,13 +40,13 @@ jobs:
           cp package.json ./deploy/
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./deploy -r #3
+        run: zip release.zip ./deploy/* -r #3
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -62,7 +62,7 @@ jobs:
         run: rm -rf deploy && mkdir deploy
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip -d deploy
+        run: unzip release.zip -d .
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
