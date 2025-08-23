@@ -45,6 +45,7 @@ jobs:
           cp -r ./.next/BUILD_ID ./deploy/.next/
           cp -r ./.next/server ./deploy/.next/
           cp package.json ./deploy/
+          cp .next/standalone/server.js ./deploy/server.js   # ★これを追加
 
         #run: zip release.zip ./deploy/* -r #3
 
