@@ -3,6 +3,27 @@ import { useEffect, useState } from "react";
 import { getSpace, createReservation } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
+type Space = {
+  name: string;
+  city: string;
+  address: string;
+  wifi_mbps: number;
+  private_room: boolean;
+  capacity_total: number;
+  category: string;
+};
+
+type Plan = {
+  plan_code: string;
+  plan_name: string;
+  price_tax_included: number;
+};
+
+type ReserveData = {
+  space: Space;
+  plans: Plan[];
+};
+
 function today() {
   const d = new Date();
   const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -16,7 +37,8 @@ export default function ReservePage({
   params: { spaceId: string };
 }) {
   const router = useRouter();
-  const [data, setData] = useState<any>(null);
+  //const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<ReserveData | null>(null);
   const [planCode, setPlanCode] = useState(""); // ← 初期は空
   const [startDate, setStartDate] = useState(today()); // ← 今日を初期セット
   const [units, setUnits] = useState(1);
@@ -63,8 +85,8 @@ export default function ReservePage({
       } else {
         setError("予約に失敗しました。入力内容をご確認ください。");
       }
-    } catch (err: any) {
-      setError("通信エラー: " + (err?.message ?? "unknown"));
+    } catch (err) {
+      setError("通信エラー: " + (err instanceof Error ? err.message : "unknown"));
     }
   };
 
@@ -88,7 +110,7 @@ export default function ReservePage({
               value={planCode}
               onChange={(e) => setPlanCode(e.target.value)}
             >
-              {data.plans.map((p: any) => (
+              {data.plans.map((p: Plan) => (
                 <option key={p.plan_code} value={p.plan_code}>
                   {p.plan_name}（{p.plan_code}） / ¥
                   {p.price_tax_included.toLocaleString()} × 単位

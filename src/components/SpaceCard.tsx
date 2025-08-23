@@ -1,6 +1,26 @@
 import Link from "next/link";
 
-export default function SpaceCard({ item }: { item: any }) {
+type SpaceCardPlan = {
+  plan_code: string;
+  plan_name: string;
+  units: number;
+  start_date: string;
+  end_date: string;
+  price_total: number;
+};
+
+type SpaceCardItem = {
+  space_id: string;
+  name: string;
+  city: string;
+  address: string;
+  wifi_mbps: number;
+  private_room: boolean;
+  category: string;
+  plan: SpaceCardPlan;
+};
+
+export default function SpaceCard({ item }: { item: SpaceCardItem }) {
   return (
     <div className="rounded-xl border p-4 bg-white/70 backdrop-blur">
       <div className="text-sm text-gray-500">{item.category === 'vacant_house' ? '空き家' : '空き店舗'}</div>

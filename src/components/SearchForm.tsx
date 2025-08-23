@@ -8,8 +8,15 @@ type Result = {
   plan: { plan_code: string; plan_name: string; unit_days: number; units: number; price_total: number; start_date: string; end_date: string; }
 };
 
+type PlanType = {
+  plan_type_id: number;
+  code: string;
+  name_ja: string;
+  unit_days: number;
+};
+
 export default function SearchForm({ onResults }: { onResults: (r: Result[]) => void }) {
-  const [planTypes, setPlanTypes] = useState<any[]>([]);
+  const [planTypes, setPlanTypes] = useState<PlanType[]>([]);
   const [planCode, setPlanCode] = useState('DAY');
   const [startDate, setStartDate] = useState<string>('');
   const [units, setUnits] = useState<number>(1);
@@ -41,7 +48,7 @@ export default function SearchForm({ onResults }: { onResults: (r: Result[]) => 
       <div className="md:col-span-2">
         <label className="block text-sm mb-1">プラン</label>
         <select className="w-full border rounded px-3 py-2" value={planCode} onChange={e=>setPlanCode(e.target.value)}>
-          {planTypes.map((p:any)=>(
+          {planTypes.map((p: PlanType) => (
             <option key={p.plan_type_id} value={p.code}>{p.name_ja}（{p.code}）</option>
           ))}
         </select>
