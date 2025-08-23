@@ -57,14 +57,11 @@ jobs:
         with:
           name: node-app
 
-      - name: Prepare deploy directory
-        run: |
-          mkdir deploy
-          cp -r .next/standalone/* ./deploy/
-          cp -r .next/static ./deploy/.next/static
-          cp package.json ./deploy/
-          cp -r node_modules ./deploy/
-          cp -r public ./deploy/
+      - name: Prepare deploy folder
+        run: rm -rf deploy && mkdir deploy
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip -d deploy
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
