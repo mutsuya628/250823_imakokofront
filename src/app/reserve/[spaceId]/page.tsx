@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { useEffect, useState } from "react";
 import { getSpace, createReservation } from "@/lib/api";
 import { useRouter } from "next/navigation";
@@ -34,8 +35,9 @@ function today() {
 export default function ReservePage({
   params,
 }: {
-  params: { spaceId: string };
+  params: Promise<{ spaceId: string }>;
 }) {
+  const { spaceId } = React.use(params);
   const router = useRouter();
   //const [data, setData] = useState<any>(null);
   const [data, setData] = useState<ReserveData | null>(null);
@@ -47,13 +49,13 @@ export default function ReservePage({
   const [error, setError] = useState<string | null>(null); // ← エラー表示用
 
   useEffect(() => {
-    getSpace(params.spaceId).then((d) => {
+    getSpace(spaceId).then((d) => {
       setData(d);
       // スペースが持っている最初のプランを初期選択
       const first = d?.plans?.[0]?.plan_code ?? "DAY";
       setPlanCode(first);
     });
-  }, [params.spaceId]);
+  }, [spaceId]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +73,7 @@ export default function ReservePage({
       const res = await createReservation({
         user_name: userName || "ゲスト",
         user_email: userEmail || "guest@example.com",
-        space_id: params.spaceId,
+        space_id: spaceId,
         plan_code: planCode,
         start_date: startDate,
         units: Number(units),
