@@ -42,16 +42,51 @@ jobs:
 
       #2
       - name: Copy artifact for deployment job
+        shell: bash
         run: |
-          mkdir -p deploy/.next
-          cp -r .next/standalone/* ./deploy
-          cp -r .next/static ./deploy/.next/
-          cp .next/BUILD_ID ./deploy/.next/
-          cp .next/prerender-manifest.json ./deploy/.next/
-          [ -d public ] && cp -r public ./deploy/
-          cp package.json ./deploy/
+          set -euxo pipefail
 
-        #run: zip release.zip ./deploy/* -r #3
+          # クリーン & 土台作成
+          rm -rf deploy
+          mkdir -p deploy
+
+          # Next.js standalone 一式（server.js / 必要な node_modules 等）
+          cp -a .next/standalone/* deploy/
+
+          # .next 配下を先に作っておく
+          mkdir -p deploy/.next
+
+          # static 資産はディレクトリごと（ワイルドカード禁止）
+          if [ -d ".next/static" ]; then
+            cp -a .next/static deploy/.next/
+          fi
+
+          # ランタイムで参照されるメタファイルは存在チェックしてコピー
+          if [ -f ".next/BUILD_ID" ]; then
+            cp .next/BUILD_ID deploy/.next/
+          fi
+          if [ -f ".next/prerender-manifest.json" ]; then
+            cp .next/prerender-manifest.json deploy/.next/
+          fi
+          if [ -f ".next/routes-manifest.json" ]; then
+            cp .next/routes-manifest.json deploy/.next/
+          fi
+
+          # public（存在すれば）
+          if [ -d "public" ]; then
+            cp -a public deploy/
+          fi
+
+          # server.js が読む package.json
+          cp package.json deploy/
+
+          # デバッグ：ドットファイルも見えるように
+          echo "---- deploy root ----"
+          ls -la deploy
+          echo "---- deploy/.next ----"
+          ls -la deploy/.next || true
+          echo "---- deploy/.next/static ----"
+          ls -la deploy/.next/static || true
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
