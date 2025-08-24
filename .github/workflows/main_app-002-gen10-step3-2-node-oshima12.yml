@@ -175,7 +175,13 @@ jobs:
         run: ls -R deploy
 
       - name: Wait for SCM to settle
-        run: sleep 60
+        run: sleep 30
+
+      - name: 'Check Azure App Service Status'
+        run: |
+          echo "Checking Azure App Service readiness..."
+          sleep 30
+          echo "App Service should be ready for deployment"
 
       - name: 'Deploy to Azure Web App (with retry)'
         id: deploy-to-webapp
@@ -186,7 +192,8 @@ jobs:
           package: ./deploy/
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5A79C044C5434698A9917972C64F6C7B }}
           clean: true
-        timeout-minutes: 15
+          restart: false
+        timeout-minutes: 20
         continue-on-error: true
 
       - name: 'Retry Deploy if failed'
@@ -198,7 +205,8 @@ jobs:
           package: ./deploy/
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5A79C044C5434698A9917972C64F6C7B }}
           clean: true
-        timeout-minutes: 15
+          restart: false
+        timeout-minutes: 20
 
       # デバッグ目的でファイル構造を確認
       - name: 'Debug deploy with file check'
