@@ -1,12 +1,20 @@
 export default function ShimanamiHero() {
   return (
-    <section className="bg-gradient-to-br from-sky-500 to-gray-900 text-white">
-      <div className="mx-auto max-w-6xl px-4 py-16">
-        <h1 className="text-3xl md:text-5xl font-bold">しまなみ海道を眺めて、はたらく。</h1>
-        <p className="mt-3 text-white/90">
-          空き家・商店街の空き店舗をワーキングスペースに。日・週・月〜年プランで柔軟に。
+    <section className="bg-gradient-to-b from-[#0a3273] to-white">
+  <div className="mx-auto max-w-6xl px-3 py-6">
+        <h1
+          className="text-2xl md:text-5xl font-bold"
+          style={{ color: '#FFEB00' }}
+        >
+          Air  Work  Nature  Warmth
+        </h1>
+        <p
+          className="text-2xl mt-3"
+          style={{ color: '#FFEB00' }}
+        >
+          <span style={{ fontSize: '2rem' }}>しなまみ </span>から 生まれる新しい働き方、生き方​​
         </p>
-        <div className="mt-6 h-2 bg-white/20 rounded-full" />
+        <div className="mt-4 h-1 bg-white/20 " />
       </div>
     </section>
   );

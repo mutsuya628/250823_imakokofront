@@ -32,11 +32,13 @@ type PlanType = {
 export default function SearchForm({ onResults }: { onResults: (r: Result[]) => void }) {
   const [planTypes, setPlanTypes] = useState<PlanType[]>([]);
   const [planCode, setPlanCode] = useState('DAY');
-  const [startDate, setStartDate] = useState<string>('');
-  const [units, setUnits] = useState<number>(1);
-  const [maxPrice, setMaxPrice] = useState<number|''>('');
-  const [minWifi, setMinWifi] = useState<string>('');
-  const [privateRoom, setPrivateRoom] = useState(false);
+  // 今日の日付をYYYY-MM-DD形式で取得
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const defaultDate = `${yyyy}-${mm}-${dd}`;
+  const [startDate, setStartDate] = useState<string>(defaultDate);
   const [category, setCategory] = useState<string>('');
 
   useEffect(() => { getPlanTypes().then(setPlanTypes); }, []);
@@ -47,57 +49,76 @@ export default function SearchForm({ onResults }: { onResults: (r: Result[]) => 
     const payload = {
       plan_code: planCode,
       start_date: startDate,
-      units: Number(units),
-      max_price_total: maxPrice === '' ? undefined : Number(maxPrice),
-      min_wifi_mbps: minWifi === '' ? undefined : Number(minWifi),
-      private_room_required: privateRoom || undefined,
       category: category || undefined,
+      units: 1,
     };
     const res = await searchSpaces(payload);
     onResults(res);
   };
 
   return (
-    <form onSubmit={submit} className="grid grid-cols-1 md:grid-cols-6 gap-3">
-      <div className="md:col-span-2">
-        <label className="block text-sm mb-1">プラン</label>
-        <select className="w-full border rounded px-3 py-2" value={planCode} onChange={e=>setPlanCode(e.target.value)}>
-          {planTypes.map((p: PlanType) => (
-            <option key={p.plan_type_id} value={p.code}>{p.name_ja}（{p.code}）</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label className="block text-sm mb-1">開始日</label>
-        <input type="date" className="w-full border rounded px-3 py-2" value={startDate} onChange={e=>setStartDate(e.target.value)} />
-      </div>
-      <div>
-        <label className="block text-sm mb-1">単位数</label>
-        <input type="number" min={1} className="w-full border rounded px-3 py-2" value={units} onChange={e=>setUnits(Number(e.target.value))} />
-      </div>
-      <div>
-        <label className="block text-sm mb-1">最大合計料金（円）</label>
-        <input type="number" min={0} className="w-full border rounded px-3 py-2" value={maxPrice} onChange={e=>setMaxPrice(e.target.value === '' ? '' : Number(e.target.value))} />
-      </div>
-      <div>
-        <label className="block text-sm mb-1">Wi-Fi速度（Mbps以上）</label>
-        <input
-          type="number"
-          className="w-full border rounded px-3 py-2"
-          value={minWifi}
-          onChange={e => setMinWifi(e.target.value)}
-          min={0}
-        />
-      </div>
-      <div className="md:col-span-6 flex items-center gap-3">
-        <label className="flex items-center gap-2"><input type="checkbox" checked={privateRoom} onChange={e=>setPrivateRoom(e.target.checked)} />個室必須</label>
-        <select className="border rounded px-3 py-2" value={category} onChange={e=>setCategory(e.target.value)}>
-          <option value="">カテゴリー指定なし</option>
-          <option value="vacant_house">空き家</option>
-          <option value="shopfront">商店街の空き店舗</option>
-        </select>
-        <button type="submit" className="ml-auto bg-sky-600 hover:bg-sky-700 text-white rounded px-4 py-2">検索</button>
-      </div>
-    </form>
-  );
+  <section className="relative overflow-hidden"
+        style={{
+          backgroundImage: "url('/title2.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          width: '100vw',
+          marginLeft: 'calc(50% - 50vw)',
+          marginRight: 'calc(50% - 50vw)',
+        }}
+    >
+            <div className="flex flex-row items-start justify-between w-full px-8 pt-8">
+              {/* 左側: 検索フォーム */}
+              <div style={{ maxWidth: 400, zIndex: 2 }}>
+                <form onSubmit={submit} className="flex flex-col gap-6">
+                  {/* ①場所 */}
+                  <div className="mb-2"> 
+                    <label className="block text-lg font-bold mb-1" style={{
+                      color: '#003273',
+                      textShadow: '0 0 2px #fff, 0 0 4px #fff',
+                    }}>場所</label>
+                    <select
+                      className="w-full border rounded px-3 py-1 text-lg bg-white"
+                      value={category}
+                      onChange={e=>setCategory(e.target.value)}
+                      style={{ backgroundColor: '#fff', color: '#003273' }}
+                    >
+                      <option value="vacant_house">空き家</option>
+                      <option value="shopfront">商店街の空き店舗</option>
+                    </select>
+                  </div>
+                  {/* ②使う日 */}
+                  <div className="mb-2 cursor-pointer" onClick={() => document.getElementById('date-input')?.focus()}>
+                    <label htmlFor="date-input" className="block text-lg font-bold mb-1" style={{
+                      color: '#003273',
+                      textShadow: '0 0 2px #fff, 0 0 4px #fff',
+                    }}>使う日</label>
+                    <input
+                      id="date-input"
+                      type="date"
+                      className="w-full border rounded px-3 py-1 text-lg bg-white"
+                      value={startDate}
+                      onChange={e=>setStartDate(e.target.value)}
+                      style={{ backgroundColor: '#fff', color: '#003273' }}
+                    />
+                  </div>
+                  {/* ③ボタン */}
+                  <button
+                    type="submit"
+                    className="w-full rounded px-4 py-3 text-xl font-bold mb-6"
+                    style={{
+                      backgroundColor: '#003273',
+                      color: '#FFEB00',
+                      letterSpacing: '0.05em',
+                      boxShadow: '0 2px 8px rgba(0,50,115,0.15)',
+                    }}
+                  >
+                    理想のワークプレイスに行く
+                  </button>
+                </form>
+              </div>
+            </div>
+          </section>
+  )
 }
