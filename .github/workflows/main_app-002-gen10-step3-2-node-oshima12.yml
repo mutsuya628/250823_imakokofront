@@ -72,6 +72,9 @@ jobs:
       - name: Show deploy folder (debug)
         run: ls -R deploy
 
+      - name: Wait for SCM to settle
+        run: sleep 20
+
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
