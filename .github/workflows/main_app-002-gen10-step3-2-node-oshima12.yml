@@ -208,12 +208,5 @@ jobs:
           restart: false
         timeout-minutes: 20
 
-      # デバッグ目的でファイル構造を確認
-      - name: 'Debug deploy with file check'
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'app-002-gen10-step3-2-node-oshima12'
-          slot-name: 'Production'
-          package: ./deploy/
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5A79C044C5434698A9917972C64F6C7B }}
-          startup-command: 'echo "=== DEBUG START ===" && ls -la && echo "=== .next check ===" && ls -la .next && echo "=== server.js check ===" && ls -la server.js && echo "=== Running debug script ===" && node debug_azure.js && echo "=== DEBUG END ==="'
+      # Note: デバッグはAzure Portal Log Streamで確認
+      # startup-command は Windows App Service では使用不可
