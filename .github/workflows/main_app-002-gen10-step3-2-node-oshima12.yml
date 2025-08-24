@@ -42,6 +42,7 @@ jobs:
           mkdir -p deploy/.next
           cp -r .next/standalone/* ./deploy
           cp -r .next/static ./deploy/.next/
+          cp .next/BUILD_ID ./deploy/.next/   # ← これを追加
           [ -d public ] && cp -r public ./deploy/
           cp package.json ./deploy/
 
