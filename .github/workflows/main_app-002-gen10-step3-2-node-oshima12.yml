@@ -105,6 +105,49 @@ jobs:
           echo "---- deploy/.next/static ----"
           ls -la deploy/.next/static || true
 
+      # デバッグスクリプトを追加
+      - name: Add debug script
+        run: |
+          cat > deploy/debug_azure.js << 'EOF'
+          const fs = require('fs');
+          const path = require('path');
+          
+          console.log('=== Azure Debug Info ===');
+          console.log('Current directory:', process.cwd());
+          console.log('__dirname:', __dirname);
+          
+          function checkDirectory(dir) {
+            try {
+              const files = fs.readdirSync(dir);
+              console.log(`\n=== ${dir} contents ===`);
+              files.forEach(file => {
+                const fullPath = path.join(dir, file);
+                const stats = fs.statSync(fullPath);
+                console.log(`${stats.isDirectory() ? 'DIR ' : 'FILE'} ${file}`);
+              });
+            } catch (err) {
+              console.log(`ERROR reading ${dir}:`, err.message);
+            }
+          }
+          
+          checkDirectory('.');
+          checkDirectory('./.next');
+          checkDirectory('./node_modules');
+          
+          console.log('\n=== Package.json content ===');
+          try {
+            const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+            console.log('Scripts:', pkg.scripts);
+          } catch (err) {
+            console.log('ERROR reading package.json:', err.message);
+          }
+          
+          console.log('\n=== Environment ===');
+          console.log('NODE_ENV:', process.env.NODE_ENV);
+          console.log('PORT:', process.env.PORT);
+          console.log('=== Debug Complete ===');
+          EOF
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
@@ -156,3 +199,13 @@ jobs:
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5A79C044C5434698A9917972C64F6C7B }}
           clean: true
         timeout-minutes: 15
+
+      # デバッグ目的でファイル構造を確認
+      - name: 'Debug deploy with file check'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'app-002-gen10-step3-2-node-oshima12'
+          slot-name: 'Production'
+          package: ./deploy/
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5A79C044C5434698A9917972C64F6C7B }}
+          startup-command: 'echo "=== DEBUG START ===" && ls -la && echo "=== .next check ===" && ls -la .next && echo "=== server.js check ===" && ls -la server.js && echo "=== Running debug script ===" && node debug_azure.js && echo "=== DEBUG END ==="'
