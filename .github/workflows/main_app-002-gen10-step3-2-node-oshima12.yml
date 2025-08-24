@@ -35,7 +35,7 @@ jobs:
           npm config set registry https://registry.npmjs.org
           npm run build --if-present
           npm run test --if-present
-          
+
       - name: Show .next after build
         run: ls -R .next
 
@@ -45,8 +45,9 @@ jobs:
         run: |
           mkdir -p deploy/.next
           cp -r .next/standalone/* ./deploy
-          cp -r .next/static ./deploy/.next/
+          cp -r .next/static/* ./deploy/.next/static
           cp .next/BUILD_ID ./deploy/.next/   # ← これを追加
+          cp .next/prerender-manifest.json ./deploy/.next/
           [ -d public ] && cp -r public ./deploy/
           cp package.json ./deploy/
 
@@ -74,9 +75,6 @@ jobs:
 
       - name: Show deploy folder (debug)
         run: ls -R deploy
-
-      - name: Show BUILD_ID
-        run: cat deploy/.next/BUILD_ID
 
       - name: Wait for SCM to settle
         run: sleep 20
