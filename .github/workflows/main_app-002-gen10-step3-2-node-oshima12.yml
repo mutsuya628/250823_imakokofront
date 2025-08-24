@@ -56,9 +56,20 @@ jobs:
           # .next 配下を先に作っておく
           mkdir -p deploy/.next
 
-          # static 資産はディレクトリごと（ワイルドカード禁止）
-          if [ -d ".next/static" ]; then
-            cp -a .next/static deploy/.next/
+          # .next の全体をコピー（standaloneに含まれていない分）
+          if [ -d ".next" ]; then
+            # static assets
+            if [ -d ".next/static" ]; then
+              cp -a .next/static deploy/.next/
+            fi
+            # server関連ファイル
+            if [ -d ".next/server" ]; then
+              cp -a .next/server deploy/.next/
+            fi
+            # standalone builds
+            if [ -d ".next/standalone" ]; then
+              cp -a .next/standalone/.next/* deploy/.next/ 2>/dev/null || true
+            fi
           fi
 
           # ランタイムで参照されるメタファイルは存在チェックしてコピー
