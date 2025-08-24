@@ -39,13 +39,13 @@ jobs:
       #2
       - name: Copy artifact for deployment job
         run: |
-          mkdir -p deploy/.next/static
-          cp -r ./.next/standalone/* ./deploy
-          cp -r ./.next/static/* ./deploy/.next/static
-          cp -r ./.next/BUILD_ID ./deploy/.next/
-          cp -r ./.next/server ./deploy/.next/
+          mkdir -p deploy
+          cp -r .next/standalone/* ./deploy
+          cp -r .next/static ./deploy/.next/
+          cp -r .next/server ./deploy/.next/
+          cp .next/BUILD_ID ./deploy/.next/
+          cp .next/prerender-manifest.json ./deploy/.next/
           cp package.json ./deploy/
-          cp .next/standalone/server.js ./deploy/server.js   # ★これを追加
 
         #run: zip release.zip ./deploy/* -r #3
 
@@ -71,6 +71,9 @@ jobs:
 
       - name: Show deploy folder (debug)
         run: ls -R deploy
+
+      - name: Show BUILD_ID
+        run: cat deploy/.next/BUILD_ID
 
       - name: Wait for SCM to settle
         run: sleep 20
