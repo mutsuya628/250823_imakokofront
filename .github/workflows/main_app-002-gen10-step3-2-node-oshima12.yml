@@ -115,14 +115,27 @@ jobs:
         run: ls -R deploy
 
       - name: Wait for SCM to settle
-        run: sleep 20
+        run: sleep 60
 
-      - name: 'Deploy to Azure Web App'
+      - name: 'Deploy to Azure Web App (with retry)'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'app-002-gen10-step3-2-node-oshima12'
           slot-name: 'Production'
-          package: ./deploy/ #4
+          package: ./deploy/
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5A79C044C5434698A9917972C64F6C7B }}
-          clean: true   # ← これを追加
+          clean: true
+        timeout-minutes: 15
+        continue-on-error: true
+
+      - name: 'Retry Deploy if failed'
+        if: steps.deploy-to-webapp.outcome == 'failure'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'app-002-gen10-step3-2-node-oshima12'
+          slot-name: 'Production'
+          package: ./deploy/
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5A79C044C5434698A9917972C64F6C7B }}
+          clean: true
+        timeout-minutes: 15
