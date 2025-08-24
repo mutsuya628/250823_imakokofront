@@ -35,6 +35,10 @@ jobs:
           npm config set registry https://registry.npmjs.org
           npm run build --if-present
           npm run test --if-present
+          
+      - name: Show .next after build
+        run: ls -R .next
+
 
       #2
       - name: Copy artifact for deployment job
