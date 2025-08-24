@@ -80,6 +80,12 @@ jobs:
           # server.js が読む package.json
           cp package.json deploy/
 
+          # デバッグ：起動スクリプト確認
+          echo "---- package.json scripts ----"
+          cat deploy/package.json | grep -A 10 '"scripts"'
+          echo "---- server.js 存在確認 ----"
+          ls -la deploy/server.js || echo "server.js not found"
+
           # デバッグ：ドットファイルも見えるように
           echo "---- deploy root ----"
           ls -la deploy
