@@ -55,16 +55,6 @@ jobs:
           cp package.json deploy/
           cp -a node_modules deploy/
 
-          # 起動スクリプトを next start に統一
-          node -e "
-          const fs = require('fs');
-          const pkg = JSON.parse(fs.readFileSync('deploy/package.json','utf8'));
-          pkg.scripts = pkg.scripts || {};
-          pkg.scripts.start = 'next start';
-          fs.writeFileSync('deploy/package.json', JSON.stringify(pkg, null, 2));
-          console.log('Updated scripts:', pkg.scripts);
-          "
-
           echo '--- deploy root ---'
           ls -la deploy | sed -n '1,120p'
           echo '--- deploy/.next (top) ---'
