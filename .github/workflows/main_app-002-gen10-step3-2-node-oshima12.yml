@@ -99,7 +99,16 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: deploy
+          path: deploy.zip
+
+      - name: Create deploy zip
+        run: |
+          echo "Creating deploy.zip..."
+          cd deploy
+          zip -r ../deploy.zip . -x "*.git*" "*.DS_Store*"
+          cd ..
+          echo "deploy.zip created successfully"
+          ls -la deploy.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -113,7 +122,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
-          path: deploy
+          path: .
+
+      - name: Extract deploy zip
+        run: |
+          echo "Extracting deploy.zip..."
+          unzip deploy.zip -d deploy/
+          echo "deploy.zip extracted successfully"
+          ls -la deploy/
 
       - name: List deploy folder (debug)
         run: ls -R deploy | sed -n '1,400p'
