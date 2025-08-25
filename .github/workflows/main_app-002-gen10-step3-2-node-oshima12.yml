@@ -91,6 +91,20 @@ jobs:
           # server.js が読む package.json
           cp package.json deploy/
 
+          # node_modules の処理 - standalone で作成された tar.gz を解凍
+          if [ -f "deploy/node_modules.tar.gz" ]; then
+            echo "---- Extracting node_modules.tar.gz ----"
+            cd deploy
+            tar -xzf node_modules.tar.gz
+            rm node_modules.tar.gz
+            cd ..
+            echo "---- node_modules extraction completed ----"
+            ls -la deploy/node_modules | head -10
+          else
+            echo "---- node_modules.tar.gz not found, checking standalone structure ----"
+            ls -la deploy/ | grep node
+          fi
+
           # デバッグ：起動スクリプト確認
           echo "---- package.json scripts ----"
           cat deploy/package.json | grep -A 10 '"scripts"'
@@ -182,32 +196,6 @@ jobs:
           echo "Checking Azure App Service readiness..."
           sleep 30
           echo "App Service should be ready for deployment"
-
-      - name: 'Login to Azure'
-        uses: azure/login@v1
-        with:
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5A79C044C5434698A9917972C64F6C7B }}
-
-      - name: 'Configure App Settings'
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: 'app-002-gen10-step3-2-node-oshima12'
-          app-settings-json: |
-            [
-              {
-                "name": "WEBSITE_NODE_DEFAULT_VERSION",
-                "value": "20.18.0"
-              },
-              {
-                "name": "NODE_ENV",
-                "value": "production"
-              },
-              {
-                "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
-                "value": "false"
-              }
-            ]
-          mask-inputs: true
 
       - name: 'Deploy to Azure Web App (with retry)'
         id: deploy-to-webapp
