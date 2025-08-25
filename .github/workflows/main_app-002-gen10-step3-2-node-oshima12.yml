@@ -53,7 +53,38 @@ jobs:
           mkdir -p deploy/.next
 
           # .next 全体（BUILD_ID, static 等）
-          cp -a .next/. deploy/.next/ 2>/dev/null || cp -a .next/* deploy/.next/
+          # .next ディレクトリの確実なコピー
+          echo "Copying .next directory..."
+          if [ -d ".next" ]; then
+            echo "✅ .next directory exists"
+            # 方法1: ディレクトリ全体をコピー
+            cp -r .next deploy/ 2>/dev/null && echo "✅ Method 1 succeeded" || {
+              echo "Method 1 failed, trying method 2..."
+              # 方法2: 個別ファイルをコピー
+              cp -a .next/* deploy/.next/ 2>/dev/null && echo "✅ Method 2 succeeded" || {
+                echo "Method 2 failed, trying method 3..."
+                # 方法3: rsync を使用（利用可能な場合）
+                rsync -av .next/ deploy/.next/ 2>/dev/null && echo "✅ Method 3 succeeded" || {
+                  echo "❌ All copy methods failed"
+                  exit 1
+                }
+              }
+            }
+          else
+            echo "❌ .next directory does not exist"
+            exit 1
+          fi
+
+          # コピー結果の確認
+          echo "--- .next copy verification ---"
+          echo "Original .next contents:"
+          ls -la .next/ | head -10
+          echo "Copied .next contents:"
+          ls -la deploy/.next/ | head -10
+          echo "BUILD_ID exists:"
+          test -f deploy/.next/BUILD_ID && echo "✅ BUILD_ID found" || echo "❌ BUILD_ID missing"
+          echo "static directory exists:"
+          test -d deploy/.next/static && echo "✅ static directory found" || echo "❌ static directory missing"
 
           # public （存在すれば）
           if [ -d "public" ]; then
