@@ -132,6 +132,69 @@ jobs:
           
           function checkDirectory(dir) {
             try {
+              const items = fs.readdirSync(dir);
+              console.log(`${dir}:`, items.slice(0, 10));
+              return true;
+            } catch (err) {
+              console.log(`${dir}: Error -`, err.message);
+              return false;
+            }
+          }
+          
+          checkDirectory('.');
+          checkDirectory('./node_modules');
+          checkDirectory('./.next');
+          
+          // Check specific modules
+          ['next', 'react', 'react-dom'].forEach(mod => {
+            const modPath = `./node_modules/${mod}`;
+            if (fs.existsSync(modPath)) {
+              console.log(`✅ ${mod} exists`);
+            } else {
+              console.log(`❌ ${mod} missing`);
+            }
+          });
+          
+          // Try to require next
+          try {
+            require('next');
+            console.log('✅ Next.js can be required');
+          } catch (err) {
+            console.log('❌ Next.js require error:', err.message);
+          }
+          
+          console.log('=== End Debug ===');
+          EOF
+
+          # Add startup error catching
+          cat > deploy/startup_debug.js << 'EOF'
+          console.log('=== Starting application with debug ===');
+          console.log('Node.js version:', process.version);
+          console.log('Current working directory:', process.cwd());
+          console.log('Environment variables:');
+          console.log('NODE_ENV:', process.env.NODE_ENV);
+          console.log('PORT:', process.env.PORT);
+          
+          try {
+            console.log('Attempting to start server...');
+            require('./server.js');
+          } catch (error) {
+            console.error('❌ Server startup failed:');
+            console.error('Error name:', error.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            process.exit(1);
+          }
+          EOF
+
+          # Modify package.json to use debug startup
+          node -e "
+          const fs = require('fs');
+          const pkg = JSON.parse(fs.readFileSync('deploy/package.json', 'utf8'));
+          pkg.scripts.start = 'node startup_debug.js';
+          fs.writeFileSync('deploy/package.json', JSON.stringify(pkg, null, 2));
+          console.log('Updated package.json scripts:', pkg.scripts);
+          " {
               const files = fs.readdirSync(dir);
               console.log(`\n=== ${dir} contents ===`);
               files.forEach(file => {
