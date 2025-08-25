@@ -60,6 +60,20 @@ jobs:
 
           # .next の全体をコピー（standaloneに含まれていない分）
           if [ -d ".next" ]; then
+            # 重要なビルドファイルを直接コピー
+            if [ -f ".next/BUILD_ID" ]; then
+              cp .next/BUILD_ID deploy/.next/
+            fi
+            if [ -f ".next/prerender-manifest.json" ]; then
+              cp .next/prerender-manifest.json deploy/.next/
+            fi
+            if [ -f ".next/routes-manifest.json" ]; then
+              cp .next/routes-manifest.json deploy/.next/
+            fi
+            if [ -f ".next/package.json" ]; then
+              cp .next/package.json deploy/.next/
+            fi
+            
             # static assets
             if [ -d ".next/static" ]; then
               cp -a .next/static deploy/.next/
@@ -68,21 +82,9 @@ jobs:
             if [ -d ".next/server" ]; then
               cp -a .next/server deploy/.next/
             fi
-            # standalone builds
-            if [ -d ".next/standalone" ]; then
-              cp -a .next/standalone/.next/* deploy/.next/ 2>/dev/null || true
-            fi
-          fi
-
-          # ランタイムで参照されるメタファイルは存在チェックしてコピー
-          if [ -f ".next/BUILD_ID" ]; then
-            cp .next/BUILD_ID deploy/.next/
-          fi
-          if [ -f ".next/prerender-manifest.json" ]; then
-            cp .next/prerender-manifest.json deploy/.next/
-          fi
-          if [ -f ".next/routes-manifest.json" ]; then
-            cp .next/routes-manifest.json deploy/.next/
+            
+            # 全ての.nextファイルをコピー
+            find .next -maxdepth 1 -type f -exec cp {} deploy/.next/ \;
           fi
 
           # public（存在すれば）
