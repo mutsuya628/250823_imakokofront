@@ -53,8 +53,7 @@ jobs:
           mkdir -p deploy/.next
 
           # .next 全体（BUILD_ID, static 等）
-          cp -a .next/* deploy/.next/
-          cp -a .next/.* deploy/.next/ 2>/dev/null || true
+          cp -a .next/. deploy/.next/ 2>/dev/null || cp -a .next/* deploy/.next/
 
           # public （存在すれば）
           if [ -d "public" ]; then
