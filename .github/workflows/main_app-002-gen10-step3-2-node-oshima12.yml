@@ -200,7 +200,6 @@ jobs:
           fs.writeFileSync('deploy/package.json', JSON.stringify(pkg, null, 2));
           console.log('Updated package.json scripts:', pkg.scripts);
           "
-          EOF
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
