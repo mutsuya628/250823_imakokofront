@@ -33,7 +33,9 @@ jobs:
         run: |
           npm ci || npm install --legacy-peer-deps
           npm config set registry https://registry.npmjs.org
-          npm run build --if-present
+          echo "Starting Next.js build..."
+          npm run build
+          echo "Build completed successfully"
           npm run test --if-present
 
       - name: Show .next after build
