@@ -95,12 +95,6 @@ jobs:
           echo '--- deploy/.next/trace (first 10) ---'
           ls -la deploy/.next/trace | head -10 || echo "trace directory not found"
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-app
-          path: deploy.zip
-
       - name: Create deploy zip
         run: |
           echo "Creating deploy.zip..."
@@ -109,6 +103,17 @@ jobs:
           cd ..
           echo "deploy.zip created successfully"
           ls -la deploy.zip
+          echo "Zip file size:"
+          du -h deploy.zip
+          echo "Zip contents:"
+          unzip -l deploy.zip | head -20
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-app
+          path: deploy.zip
+          retention-days: 1
 
   deploy:
     runs-on: ubuntu-latest
