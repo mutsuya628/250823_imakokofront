@@ -122,6 +122,7 @@ jobs:
       # デバッグスクリプトを追加
       - name: Add debug script
         run: |
+          # Create debug script
           cat > deploy/debug_azure.js << 'EOF'
           const fs = require('fs');
           const path = require('path');
@@ -133,10 +134,10 @@ jobs:
           function checkDirectory(dir) {
             try {
               const items = fs.readdirSync(dir);
-              console.log(`${dir}:`, items.slice(0, 10));
+              console.log(dir + ':', items.slice(0, 10));
               return true;
             } catch (err) {
-              console.log(`${dir}: Error -`, err.message);
+              console.log(dir + ': Error -', err.message);
               return false;
             }
           }
@@ -146,12 +147,12 @@ jobs:
           checkDirectory('./.next');
           
           // Check specific modules
-          ['next', 'react', 'react-dom'].forEach(mod => {
-            const modPath = `./node_modules/${mod}`;
+          ['next', 'react', 'react-dom'].forEach(function(mod) {
+            const modPath = './node_modules/' + mod;
             if (fs.existsSync(modPath)) {
-              console.log(`✅ ${mod} exists`);
+              console.log('✅ ' + mod + ' exists');
             } else {
-              console.log(`❌ ${mod} missing`);
+              console.log('❌ ' + mod + ' missing');
             }
           });
           
@@ -166,7 +167,9 @@ jobs:
           console.log('=== End Debug ===');
           EOF
 
-          # Add startup error catching
+      - name: Add startup debug script
+        run: |
+          # Create startup debug script
           cat > deploy/startup_debug.js << 'EOF'
           console.log('=== Starting application with debug ===');
           console.log('Node.js version:', process.version);
@@ -187,7 +190,9 @@ jobs:
           }
           EOF
 
-          # Modify package.json to use debug startup
+      - name: Update package.json for debug startup
+        run: |
+          # Update package.json scripts
           node -e "
           const fs = require('fs');
           const pkg = JSON.parse(fs.readFileSync('deploy/package.json', 'utf8'));
