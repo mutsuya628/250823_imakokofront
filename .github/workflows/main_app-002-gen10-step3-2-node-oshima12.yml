@@ -199,35 +199,7 @@ jobs:
           pkg.scripts.start = 'node startup_debug.js';
           fs.writeFileSync('deploy/package.json', JSON.stringify(pkg, null, 2));
           console.log('Updated package.json scripts:', pkg.scripts);
-          " {
-              const files = fs.readdirSync(dir);
-              console.log(`\n=== ${dir} contents ===`);
-              files.forEach(file => {
-                const fullPath = path.join(dir, file);
-                const stats = fs.statSync(fullPath);
-                console.log(`${stats.isDirectory() ? 'DIR ' : 'FILE'} ${file}`);
-              });
-            } catch (err) {
-              console.log(`ERROR reading ${dir}:`, err.message);
-            }
-          }
-          
-          checkDirectory('.');
-          checkDirectory('./.next');
-          checkDirectory('./node_modules');
-          
-          console.log('\n=== Package.json content ===');
-          try {
-            const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
-            console.log('Scripts:', pkg.scripts);
-          } catch (err) {
-            console.log('ERROR reading package.json:', err.message);
-          }
-          
-          console.log('\n=== Environment ===');
-          console.log('NODE_ENV:', process.env.NODE_ENV);
-          console.log('PORT:', process.env.PORT);
-          console.log('=== Debug Complete ===');
+          "
           EOF
 
       - name: Upload artifact for deployment job
