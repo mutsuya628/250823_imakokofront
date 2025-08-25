@@ -53,23 +53,12 @@ jobs:
           mkdir -p deploy/.next
 
           # .next 全体（BUILD_ID, static 等）
-          # .next ディレクトリの確実なコピー
           echo "Copying .next directory..."
           if [ -d ".next" ]; then
             echo "✅ .next directory exists"
-            # 方法1: ディレクトリ全体をコピー
-            cp -r .next deploy/ 2>/dev/null && echo "✅ Method 1 succeeded" || {
-              echo "Method 1 failed, trying method 2..."
-              # 方法2: 個別ファイルをコピー
-              cp -a .next/* deploy/.next/ 2>/dev/null && echo "✅ Method 2 succeeded" || {
-                echo "Method 2 failed, trying method 3..."
-                # 方法3: rsync を使用（利用可能な場合）
-                rsync -av .next/ deploy/.next/ 2>/dev/null && echo "✅ Method 3 succeeded" || {
-                  echo "❌ All copy methods failed"
-                  exit 1
-                }
-              }
-            }
+            # シンプルで確実なコピー
+            cp -r .next deploy/
+            echo "✅ .next directory copied successfully"
           else
             echo "❌ .next directory does not exist"
             exit 1
