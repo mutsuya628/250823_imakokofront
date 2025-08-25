@@ -60,31 +60,15 @@ jobs:
 
           # .next の全体をコピー（standaloneに含まれていない分）
           if [ -d ".next" ]; then
-            # 重要なビルドファイルを直接コピー
-            if [ -f ".next/BUILD_ID" ]; then
-              cp .next/BUILD_ID deploy/.next/
-            fi
-            if [ -f ".next/prerender-manifest.json" ]; then
-              cp .next/prerender-manifest.json deploy/.next/
-            fi
-            if [ -f ".next/routes-manifest.json" ]; then
-              cp .next/routes-manifest.json deploy/.next/
-            fi
-            if [ -f ".next/package.json" ]; then
-              cp .next/package.json deploy/.next/
-            fi
+            echo "---- Copying entire .next directory ----"
+            # .next全体を完全コピー
+            cp -a .next/* deploy/.next/
             
-            # static assets
-            if [ -d ".next/static" ]; then
-              cp -a .next/static deploy/.next/
-            fi
-            # server関連ファイル
-            if [ -d ".next/server" ]; then
-              cp -a .next/server deploy/.next/
-            fi
+            # 隠しファイルも含めて完全コピー
+            cp -a .next/.* deploy/.next/ 2>/dev/null || true
             
-            # 全ての.nextファイルをコピー
-            find .next -maxdepth 1 -type f -exec cp {} deploy/.next/ \;
+            echo "---- .next copy completed ----"
+            ls -la deploy/.next/
           fi
 
           # public（存在すれば）
