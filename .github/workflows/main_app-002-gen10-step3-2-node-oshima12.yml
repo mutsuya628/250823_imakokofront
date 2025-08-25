@@ -29,7 +29,6 @@ jobs:
           NEXT_PUBLIC_API_BASE: ${{ secrets.NEXT_PUBLIC_API_BASE }}
         run: |
           set -euxo pipefail
-          unset PORT || true
           npm ci || npm install --legacy-peer-deps
           npm config set registry https://registry.npmjs.org
           npm run build
@@ -61,7 +60,7 @@ jobs:
           const fs = require('fs');
           const pkg = JSON.parse(fs.readFileSync('deploy/package.json','utf8'));
           pkg.scripts = pkg.scripts || {};
-          pkg.scripts.start = 'next start -p \\$PORT';
+          pkg.scripts.start = 'next start';
           fs.writeFileSync('deploy/package.json', JSON.stringify(pkg, null, 2));
           console.log('Updated scripts:', pkg.scripts);
           "
