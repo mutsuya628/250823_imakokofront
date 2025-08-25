@@ -184,7 +184,7 @@ jobs:
           node -e "
           const fs = require('fs');
           const pkg = JSON.parse(fs.readFileSync('deploy/package.json', 'utf8'));
-          pkg.scripts.start = 'node startup_debug.js';
+          pkg.scripts.start = 'next start';
           fs.writeFileSync('deploy/package.json', JSON.stringify(pkg, null, 2));
           console.log('Updated package.json scripts:', pkg.scripts);
           "
