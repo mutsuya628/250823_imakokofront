@@ -183,8 +183,12 @@ jobs:
           sleep 30
           echo "App Service should be ready for deployment"
 
-      # Azure App Service の Node.js バージョンを設定
-      - name: 'Set Node.js version for Azure'
+      - name: 'Login to Azure'
+        uses: azure/login@v1
+        with:
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5A79C044C5434698A9917972C64F6C7B }}
+
+      - name: 'Configure App Settings'
         uses: azure/appservice-settings@v1
         with:
           app-name: 'app-002-gen10-step3-2-node-oshima12'
@@ -203,7 +207,7 @@ jobs:
                 "value": "false"
               }
             ]
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5A79C044C5434698A9917972C64F6C7B }}
+          mask-inputs: true
 
       - name: 'Deploy to Azure Web App (with retry)'
         id: deploy-to-webapp
