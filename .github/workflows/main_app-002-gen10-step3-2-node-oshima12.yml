@@ -33,6 +33,16 @@ jobs:
           npm config set registry https://registry.npmjs.org
           npm run build
 
+          # next を dependencies に移動（devDependencies にある場合）
+          if npm list next --depth=0 | grep -q "devDependencies"; then
+            echo "Moving next from devDependencies to dependencies..."
+            npm install next --save
+          fi
+
+          # 本番用 node_modules を確実に作成
+          echo "Creating production node_modules..."
+          npm ci --only=production || npm install --only=production
+
       - name: Prepare deploy folder (next start)
         shell: bash
         run: |
@@ -59,6 +69,12 @@ jobs:
           ls -la deploy | sed -n '1,120p'
           echo '--- deploy/.next (top) ---'
           ls -la deploy/.next | sed -n '1,120p' || true
+          echo '--- deploy/.next/BUILD_ID ---'
+          cat deploy/.next/BUILD_ID || echo "BUILD_ID not found"
+          echo '--- deploy/.next/static (first 10) ---'
+          ls -la deploy/.next/static | head -10 || echo "static directory not found"
+          echo '--- deploy/.next/trace (first 10) ---'
+          ls -la deploy/.next/trace | head -10 || echo "trace directory not found"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
