@@ -1,6 +1,8 @@
 const { createServer } = require('http')
 const { parse } = require('url')
 const next = require('next')
+const path = require('path')
+const fs = require('fs')
 
 const dev = process.env.NODE_ENV !== 'production'
 const hostname = process.env.HOSTNAME || 'localhost'
@@ -13,6 +15,19 @@ app.prepare().then(() => {
   createServer(async (req, res) => {
     try {
       const parsedUrl = parse(req.url, true)
+      const { pathname } = parsedUrl
+      
+      // Handle static files from public directory
+      if (pathname.startsWith('/') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
+        const filePath = path.join(__dirname, 'public', pathname)
+        
+        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+          // Let Next.js handle static files properly
+          await handle(req, res, parsedUrl)
+          return
+        }
+      }
+      
       await handle(req, res, parsedUrl)
     } catch (err) {
       console.error('Error occurred handling', req.url, err)
