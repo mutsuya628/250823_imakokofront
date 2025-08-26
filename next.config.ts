@@ -5,7 +5,9 @@ const nextConfig: NextConfig = {
     trailingSlash: true,
     images: {
         unoptimized: true
-    }
+    },
+    assetPrefix: '',
+    basePath: ''
   /* config options here */
 };
 
