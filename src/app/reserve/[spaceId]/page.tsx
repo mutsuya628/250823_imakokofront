@@ -167,8 +167,8 @@ export default function ReservePage({
               value={planCode}
               onChange={(e) => setPlanCode(e.target.value)}
             >
-              {data.plans.map((p: Plan) => (
-                <option key={p.plan_code} value={p.plan_code}>
+              {data.plans.map((p: Plan, index) => (
+                <option key={`${p.plan_code}-${index}`} value={p.plan_code}>
                   {p.plan_name}（{p.plan_code}） / ¥
                   {p.price_tax_included.toLocaleString()} × 単位
                 </option>

@@ -70,8 +70,8 @@ export default function Page() {
           <div className="mt-6">
             <h2 className="text-xl font-semibold mb-4">検索結果 ({results.length}件)</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              {results.map((item) => (
-                <SpaceCard key={item.space_id} item={item} />
+              {results.map((item, index) => (
+                <SpaceCard key={`${item.space_id}-${item.plan?.plan_code || 'default'}-${index}`} item={item} />
               ))}
             </div>
           </div>

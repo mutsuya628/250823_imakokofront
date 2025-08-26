@@ -9,7 +9,10 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "node .next/standalone/server.js",
+    "build-standalone": "next build && npm run copy-public",
+    "copy-public": "xcopy public .next\\standalone\\public /E /I /Y",
+    "start": "next start",
+    "start-standalone": "node .next/standalone/server.js",
     "lint": "next lint"
   },
   "dependencies": {

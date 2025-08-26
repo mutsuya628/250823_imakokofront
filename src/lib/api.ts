@@ -1,5 +1,5 @@
 // 修正 by M. Tanabe - API_BASEにフォールバックURL追加
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
+export const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
 // 修正 by M. Tanabe - 終了
 
 type PlanType = {
@@ -108,7 +108,28 @@ export async function searchSpaces(payload: SearchParams): Promise<SpaceResult[]
   if (!r.ok) {
     throw new Error(`API error: ${r.status} ${r.statusText}`);
   }
-  return r.json();
+  const results = await r.json();
+  
+  // デバッグログ: 重複チェック
+  console.log('API Response:', results);
+  const spaceIds = results.map((r: SpaceResult) => r.space_id);
+  const uniqueSpaceIds = [...new Set(spaceIds)];
+  console.log('Total results:', results.length);
+  console.log('Unique space IDs:', uniqueSpaceIds.length);
+  if (spaceIds.length !== uniqueSpaceIds.length) {
+    console.warn('重複したspace_idが検出されました:', spaceIds);
+  }
+  
+  // 重複除去処理 - space_idとplan_codeの組み合わせで一意にする
+  const uniqueResults = results.filter((result: SpaceResult, index: number, array: SpaceResult[]) => {
+    return index === array.findIndex(r => 
+      r.space_id === result.space_id && r.plan?.plan_code === result.plan?.plan_code
+    );
+  });
+  
+  console.log('After deduplication:', uniqueResults.length);
+  
+  return uniqueResults;
 }
 // 修正 by M. Tanabe - 終了
 
