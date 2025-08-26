@@ -20,25 +20,32 @@ type SpaceCardItem = {
   private_room: boolean;
   category: string;
   plan: SpaceCardPlan;
+  // 修正 by M. Tanabe - 距離情報表示機能追加
+  distance?: number; // 距離情報（オプション）
 };
 
 export default function SpaceCard({ item }: { item: SpaceCardItem }) {
   return (
-  <div className="rounded-xl p-4 bg-white/70 backdrop-blur flex flex-row items-center gap-4">
-      <div className="flex-1">
+    <div className="rounded-xl p-4 bg-white/70 backdrop-blur flex flex-col md:flex-row items-start md:items-center gap-4">
+      <div className="flex-1 w-full">
         <div className="text-sm text-gray-500">{item.category === 'vacant_house' ? '空き家' : '空き店舗'}</div>
-        <h3 className="text-lg font-semibold">{item.name}</h3>
-        <div className="text-sm">{item.city}／{item.address}</div>
-        <div className="mt-2 text-sm">Wi-Fi：{item.wifi_mbps} Mbps　個室：{item.private_room ? 'あり' : 'なし'}</div>
+        <h3 className="text-lg md:text-xl font-semibold">{item.name}</h3>
+        <div className="text-sm md:text-base">{item.city}／{item.address}</div>
+        {item.distance && (
+          <div className="text-sm text-blue-600 font-medium">
+            距離: {item.distance}m
+          </div>
+        )}
+        <div className="mt-2 text-sm md:text-base">Wi-Fi：{item.wifi_mbps} Mbps　個室：{item.private_room ? 'あり' : 'なし'}</div>
         {/* プラン名・期間のみ表示 */}
         {/* <div className="mt-3 text-sm">
           <span className="font-medium">{item.plan.plan_name}</span>
           （{item.plan.start_date} → {item.plan.end_date}）
         </div> */}
-        <div className="mt-2 text-2xl font-bold">¥{item.plan.price_total.toLocaleString()}</div>
+        <div className="mt-2 text-xl md:text-2xl font-bold">¥{item.plan.price_total.toLocaleString()}</div>
         <div className="mt-3">
           <Link
-            className="inline-block rounded px-4 py-2 font-bold"
+            className="inline-block rounded px-4 py-2 md:py-3 text-sm md:text-base font-bold"
             href={`/reserve/${item.space_id}`}
             style={{
               backgroundColor: '#003273', // PANTONE 288C
@@ -84,7 +91,8 @@ function ImageForSpace({ spaceId, name }: { spaceId: string; name: string }) {
       alt={name + '画像'}
       width={160}
       height={160}
-      className="w-40 h-40 object-cover rounded-lg"
+      // 修正 by M. Tanabe - レスポンシブ画像サイズ調整
+      className="w-full h-48 md:w-40 md:h-40 object-cover rounded-lg"
       onError={handleError}
       priority
     />

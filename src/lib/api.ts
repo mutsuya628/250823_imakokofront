@@ -1,4 +1,6 @@
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE!;
+// 修正 by M. Tanabe - API_BASEにフォールバックURL追加
+export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
+// 修正 by M. Tanabe - 終了
 
 type PlanType = {
   plan_type_id: number;
@@ -87,28 +89,48 @@ export async function fetchPlanTypes(): Promise<PlanType[]> {
   return await res.json();
 }
 
+// 修正 by M. Tanabe - エラーハンドリング追加
 export async function getPlanTypes(): Promise<PlanType[]> {
   const r = await fetch(`${API_BASE}/api/plan-types`, { cache: 'no-store' });
+  if (!r.ok) {
+    throw new Error(`API error: ${r.status} ${r.statusText}`);
+  }
   return r.json();
 }
+// 修正 by M. Tanabe - 終了
 
+// 修正 by M. Tanabe - エラーハンドリング追加
 export async function searchSpaces(payload: SearchParams): Promise<SpaceResult[]> {
   const r = await fetch(`${API_BASE}/api/search`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
+  if (!r.ok) {
+    throw new Error(`API error: ${r.status} ${r.statusText}`);
+  }
   return r.json();
 }
+// 修正 by M. Tanabe - 終了
 
+// 修正 by M. Tanabe - エラーハンドリング追加
 export async function getSpace(spaceId: string): Promise<ReserveData> {
   const r = await fetch(`${API_BASE}/api/spaces/${spaceId}`, { cache: 'no-store' });
+  if (!r.ok) {
+    throw new Error(`API error: ${r.status} ${r.statusText}`);
+  }
   return r.json();
 }
+// 修正 by M. Tanabe - 終了
 
+// 修正 by M. Tanabe - エラーハンドリング追加
 export async function createReservation(payload: ReservationCreate): Promise<ReservationResult> {
   const r = await fetch(`${API_BASE}/api/reservations`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
+  if (!r.ok) {
+    throw new Error(`API error: ${r.status} ${r.statusText}`);
+  }
   return r.json();
 }
+// 修正 by M. Tanabe - 終了

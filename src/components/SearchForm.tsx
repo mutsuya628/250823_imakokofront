@@ -30,7 +30,9 @@ type PlanType = {
 };
 
 export default function SearchForm({ onResults }: { onResults: (r: Result[]) => void }) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [planTypes, setPlanTypes] = useState<PlanType[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [planCode, setPlanCode] = useState('DAY');
   // 今日の日付をYYYY-MM-DD形式で取得
   const today = new Date();
@@ -41,23 +43,39 @@ export default function SearchForm({ onResults }: { onResults: (r: Result[]) => 
   const [startDate, setStartDate] = useState<string>(defaultDate);
   const [category, setCategory] = useState<string>('');
 
-  useEffect(() => { getPlanTypes().then(setPlanTypes); }, []);
+  // 修正 by M. Tanabe - エラーハンドリング追加
+  useEffect(() => { 
+    getPlanTypes()
+      .then(setPlanTypes)
+      .catch(error => {
+        console.error('プランタイプ取得エラー:', error);
+      });
+  }, []);
+  // 修正 by M. Tanabe - 終了
 
+  // 修正 by M. Tanabe - エラーハンドリング追加
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!startDate) { alert('開始日を選択してください'); return; }
-    const payload = {
-      plan_code: planCode,
-      start_date: startDate,
-      category: category || undefined,
-      units: 1,
-    };
-    const res = await searchSpaces(payload);
-    onResults(res);
+    try {
+      const payload = {
+        plan_code: planCode,
+        start_date: startDate,
+        category: category || undefined,
+        units: 1,
+      };
+      const res = await searchSpaces(payload);
+      onResults(res);
+    } catch (error) {
+      console.error('検索エラー:', error);
+      alert('検索中にエラーが発生しました。APIサーバーが起動しているか確認してください。');
+    }
   };
+  // 修正 by M. Tanabe - 終了
 
   return (
-  <section className="relative overflow-hidden"
+  // 修正 by M. Tanabe - レスポンシブデザイン対応
+  <section className="relative overflow-hidden min-h-[300px] md:min-h-[400px]"
         style={{
           backgroundImage: "url('/title2.jpg')",
           backgroundSize: 'cover',
@@ -68,18 +86,21 @@ export default function SearchForm({ onResults }: { onResults: (r: Result[]) => 
           marginRight: 'calc(50% - 50vw)',
         }}
     >
-            <div className="flex flex-row items-start justify-between w-full px-8 pt-8">
-              {/* 左側: 検索フォーム */}
-              <div style={{ maxWidth: 400, zIndex: 2 }}>
-                <form onSubmit={submit} className="flex flex-col gap-6">
+            {/* 修正 by M. Tanabe - レスポンシブレイアウト調整 */}
+            <div className="flex flex-col md:flex-row items-start justify-between w-full px-4 md:px-8 pt-4 md:pt-8">
+              {/* 検索フォーム */}
+              <div className="w-full md:max-w-md lg:max-w-lg z-10">
+                <form onSubmit={submit} className="flex flex-col gap-4 md:gap-6">
                   {/* ①場所 */}
                   <div className="mb-2"> 
-                    <label className="block text-lg font-bold mb-1" style={{
+                    {/* 修正 by M. Tanabe - レスポンシブフォントサイズ調整 */}
+                    <label className="block text-base md:text-lg font-bold mb-1" style={{
                       color: '#003273',
                       textShadow: '0 0 2px #fff, 0 0 4px #fff',
                     }}>場所</label>
                     <select
-                      className="w-full border rounded px-3 py-1 text-lg bg-white"
+                      // 修正 by M. Tanabe - レスポンシブパディング・フォント調整
+                      className="w-full border rounded px-3 py-2 md:py-3 text-base md:text-lg bg-white"
                       value={category}
                       onChange={e=>setCategory(e.target.value)}
                       style={{ backgroundColor: '#fff', color: '#003273' }}
@@ -90,14 +111,16 @@ export default function SearchForm({ onResults }: { onResults: (r: Result[]) => 
                   </div>
                   {/* ②使う日 */}
                   <div className="mb-2 cursor-pointer" onClick={() => document.getElementById('date-input')?.focus()}>
-                    <label htmlFor="date-input" className="block text-lg font-bold mb-1" style={{
+                    {/* 修正 by M. Tanabe - レスポンシブフォントサイズ調整 */}
+                    <label htmlFor="date-input" className="block text-base md:text-lg font-bold mb-1" style={{
                       color: '#003273',
                       textShadow: '0 0 2px #fff, 0 0 4px #fff',
                     }}>使う日</label>
                     <input
                       id="date-input"
                       type="date"
-                      className="w-full border rounded px-3 py-1 text-lg bg-white"
+                      // 修正 by M. Tanabe - レスポンシブパディング・フォント調整
+                      className="w-full border rounded px-3 py-2 md:py-3 text-base md:text-lg bg-white"
                       value={startDate}
                       onChange={e=>setStartDate(e.target.value)}
                       style={{ backgroundColor: '#fff', color: '#003273' }}
@@ -106,7 +129,8 @@ export default function SearchForm({ onResults }: { onResults: (r: Result[]) => 
                   {/* ③ボタン */}
                   <button
                     type="submit"
-                    className="w-full rounded px-4 py-3 text-xl font-bold mb-6"
+                    // 修正 by M. Tanabe - レスポンシブパディング・フォント・マージン調整
+                    className="w-full rounded px-4 py-3 md:py-4 text-lg md:text-xl font-bold mb-4 md:mb-6"
                     style={{
                       backgroundColor: '#003273',
                       color: '#FFEB00',

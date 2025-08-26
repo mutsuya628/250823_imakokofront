@@ -2,7 +2,10 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { getSpace, createReservation } from "@/lib/api";
+// 修正 by M. Tanabe - 地図・画像表示機能追加
 import { useRouter } from "next/navigation";
+import Map from "@/components/Map";
+import Image from "next/image";
 
 type Space = {
   name: string;
@@ -30,6 +33,43 @@ function today() {
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
   return `${d.getFullYear()}-${mm}-${dd}`;
+}
+
+// 修正 by M. Tanabe - 物件画像表示コンポーネント追加
+function SpaceImage({ spaceId, name }: { spaceId: string; name: string }) {
+  const candidates = [
+    `/${spaceId}.png`,
+    `/${spaceId}.jpeg`,
+    `/${spaceId}.jpg`,
+    `/${spaceId}.PNG`,
+    `/${spaceId}.JPEG`,
+    `/${spaceId}.JPG`,
+  ];
+  const [src, setSrc] = useState(candidates[0]);
+  const [tried, setTried] = useState(0);
+
+  const handleError = () => {
+    if (tried < candidates.length - 1) {
+      setTried(tried + 1);
+      setSrc(candidates[tried + 1]);
+    } else {
+      setSrc('/file.svg');
+    }
+  };
+
+  return (
+    <div className="mt-4">
+      <Image
+        src={src}
+        alt={name + '画像'}
+        width={400}
+        height={300}
+        className="w-full h-48 object-cover rounded-lg shadow-sm"
+        onError={handleError}
+        priority
+      />
+    </div>
+  );
 }
 
 export default function ReservePage({
@@ -78,8 +118,9 @@ export default function ReservePage({
         units: Number(units),
       });
 
+      // 修正 by M. Tanabe - 予約成功時のメッセージ改善
       if (res?.reservation_id) {
-        alert("予約が確定しました！");
+        alert("予約が確定しました！\nトップページに戻ります。");
         router.push("/");
       } else if (res?.error) {
         setError(`予約エラー: ${res.error}`);
@@ -94,20 +135,35 @@ export default function ReservePage({
   if (!data)
     return <div className="mx-auto max-w-6xl px-4 py-10">読み込み中…</div>;
 
+  // 修正 by M. Tanabe - レスポンシブ対応・トップページ戻るボタン追加
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      <h1 className="text-2xl font-bold">{data.space.name}</h1>
-      <div className="text-sm text-gray-600 mt-1">
+    <main className="mx-auto max-w-6xl px-4 md:px-6 py-6 md:py-10">
+      {/* 戻るボタン */}
+      <div className="mb-4 md:mb-6">
+        <button
+          onClick={() => router.push('/')}
+          className="inline-flex items-center px-3 py-2 md:px-4 md:py-2 text-sm md:text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+        >
+          <svg className="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          トップページに戻る
+        </button>
+      </div>
+
+      {/* 修正 by M. Tanabe - レスポンシブフォント・レイアウト調整 */}
+      <h1 className="text-xl md:text-2xl font-bold">{data.space.name}</h1>
+      <div className="text-sm md:text-base text-gray-600 mt-1">
         {data.space.city}／{data.space.address}
       </div>
 
-      <div className="mt-4 grid gap-6 md:grid-cols-2">
-        <div className="rounded-xl border p-4 bg-white">
-          <h2 className="font-semibold mb-2">プラン選択</h2>
-          <form onSubmit={submit} className="grid gap-3">
-            <label className="text-sm">プラン</label>
+      <div className="mt-4 grid gap-4 md:gap-6 md:grid-cols-2">
+        <div className="rounded-xl border p-4 md:p-6 bg-white">
+          <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">プラン選択</h2>
+          <form onSubmit={submit} className="grid gap-3 md:gap-4">
+            <label className="text-sm md:text-base font-medium">プラン</label>
             <select
-              className="border rounded px-3 py-2"
+              className="border rounded px-3 py-2 md:py-3 text-sm md:text-base"
               value={planCode}
               onChange={(e) => setPlanCode(e.target.value)}
             >
@@ -119,52 +175,52 @@ export default function ReservePage({
               ))}
             </select>
 
-            <label className="text-sm">開始日</label>
+            <label className="text-sm md:text-base font-medium">開始日</label>
             <input
               type="date"
-              className="border rounded px-3 py-2"
+              className="border rounded px-3 py-2 md:py-3 text-sm md:text-base"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
 
-            <label className="text-sm">単位数</label>
+            <label className="text-sm md:text-base font-medium">単位数</label>
             <input
               type="number"
               min={1}
-              className="border rounded px-3 py-2"
+              className="border rounded px-3 py-2 md:py-3 text-sm md:text-base"
               value={units}
               onChange={(e) => setUnits(Number(e.target.value))}
             />
 
-            <label className="text-sm">お名前（任意）</label>
+            <label className="text-sm md:text-base font-medium">お名前（任意）</label>
             <input
-              className="border rounded px-3 py-2"
+              className="border rounded px-3 py-2 md:py-3 text-sm md:text-base"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
             />
 
-            <label className="text-sm">メール（任意）</label>
+            <label className="text-sm md:text-base font-medium">メール（任意）</label>
             <input
               type="email"
-              className="border rounded px-3 py-2"
+              className="border rounded px-3 py-2 md:py-3 text-sm md:text-base"
               value={userEmail}
               onChange={(e) => setUserEmail(e.target.value)}
             />
 
-            {error && <div className="text-red-600 text-sm">{error}</div>}
+            {error && <div className="text-red-600 text-sm md:text-base">{error}</div>}
 
             <button
               type="submit"
-              className="mt-2 bg-gray-900 text-white rounded px-4 py-2"
+              className="mt-2 md:mt-4 bg-gray-900 text-white rounded px-4 py-2 md:py-3 text-sm md:text-base font-medium"
             >
               予約を確定
             </button>
           </form>
         </div>
 
-        <div className="rounded-xl border p-4 bg-white">
-          <h2 className="font-semibold mb-2">設備・情報</h2>
-          <ul className="text-sm space-y-1">
+        <div className="rounded-xl border p-4 md:p-6 bg-white">
+          <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">設備・情報</h2>
+          <ul className="text-sm md:text-base space-y-2 md:space-y-3">
             <li>Wi-Fi：{data.space.wifi_mbps} Mbps</li>
             <li>個室：{data.space.private_room ? "あり" : "なし"}</li>
             <li>定員：{data.space.capacity_total} 名</li>
@@ -173,8 +229,19 @@ export default function ReservePage({
               {data.space.category === "vacant_house" ? "空き家" : "空き店舗"}
             </li>
           </ul>
+          
+          {/* 修正 by M. Tanabe - 物件画像表示追加 */}
+          <SpaceImage spaceId={spaceId} name={data.space.name} />
         </div>
+      </div>
+
+      {/* 地図セクション */}
+      {/* 修正 by M. Tanabe - 地図表示機能追加 */}
+      <div className="mt-6 md:mt-8">
+        <h2 className="text-lg md:text-xl font-semibold mb-4">所在地</h2>
+        <Map address={data.space.address} spaceName={data.space.name} />
       </div>
     </main>
   );
 }
+// 修正 by M. Tanabe - 終了
