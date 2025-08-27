@@ -47,13 +47,22 @@ export default function MapSearch({ onResults }: MapSearchProps) {
 
   useEffect(() => {
     const initMap = async () => {
-      const loader = new Loader({
-        apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-        version: 'weekly',
-      });
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      console.log('MapSearch - Google Maps API Key available:', !!apiKey);
+      
+      if (!apiKey) {
+        console.error('MapSearch - Google Maps API key is not available');
+        return;
+      }
 
-      const google = await loader.load();
-      const geocoder = new google.maps.Geocoder();
+      try {
+        const loader = new Loader({
+          apiKey: apiKey,
+          version: 'weekly',
+        });
+
+        const google = await loader.load();
+        const geocoder = new google.maps.Geocoder();
 
       // 今治市の中心座標で初期化
       geocoder.geocode({ address: '今治市' }, (results, status) => {
@@ -128,14 +137,19 @@ export default function MapSearch({ onResults }: MapSearchProps) {
 
              currentMarkerRef.current = marker;
            });
+        } else {
+          console.error('今治市の住所変換に失敗しました:', status);
         }
       });
+      } catch (error) {
+        console.error('MapSearch - Google Maps loader error:', error);
+      }
     };
 
-         if (!map) {
-       initMap();
-     }
-   }, [map, searchRadius]);
+    if (!map) {
+      initMap();
+    }
+  }, [map, searchRadius]);
 
   // 半径を更新する関数
   const updateRadius = (newRadius: number) => {

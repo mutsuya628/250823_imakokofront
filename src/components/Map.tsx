@@ -13,33 +13,45 @@ export default function Map({ address, spaceName }: MapProps) {
 
   useEffect(() => {
     const initMap = async () => {
-      const loader = new Loader({
-        apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-        version: 'weekly',
-      });
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      console.log('Google Maps API Key available:', !!apiKey);
+      
+      if (!apiKey) {
+        console.error('Google Maps API key is not available');
+        return;
+      }
 
-      const google = await loader.load();
-      const geocoder = new google.maps.Geocoder();
+      try {
+        const loader = new Loader({
+          apiKey: apiKey,
+          version: 'weekly',
+        });
 
-      geocoder.geocode({ address }, (results, status) => {
-        if (status === 'OK' && results && results[0] && mapRef.current) {
-          const map = new google.maps.Map(mapRef.current, {
-            center: results[0].geometry.location,
-            zoom: 15,
-            mapTypeControl: false,
-            streetViewControl: false,
-            fullscreenControl: false,
-          });
+        const google = await loader.load();
+        const geocoder = new google.maps.Geocoder();
 
-          new google.maps.Marker({
-            map,
-            position: results[0].geometry.location,
-            title: spaceName,
-          });
-        } else {
-          console.error('住所の変換に失敗しました:', address, status);
-        }
-      });
+        geocoder.geocode({ address }, (results, status) => {
+          if (status === 'OK' && results && results[0] && mapRef.current) {
+            const map = new google.maps.Map(mapRef.current, {
+              center: results[0].geometry.location,
+              zoom: 15,
+              mapTypeControl: false,
+              streetViewControl: false,
+              fullscreenControl: false,
+            });
+
+            new google.maps.Marker({
+              map,
+              position: results[0].geometry.location,
+              title: spaceName,
+            });
+          } else {
+            console.error('住所の変換に失敗しました:', address, status);
+          }
+        });
+      } catch (error) {
+        console.error('Google Maps loader error:', error);
+      }
     };
 
     if (address) {
