@@ -12,11 +12,7 @@ const nextConfig: NextConfig = {
     poweredByHeader: false,
     // Azure での静的ファイル配信最適化
     assetPrefix: '',
-    basePath: '',
-    experimental: {
-        // Azure での安定性向上
-        esmExternals: false
-    }
+    basePath: ''
 };
 
 export default nextConfig;
