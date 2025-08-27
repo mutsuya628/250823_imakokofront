@@ -1,15 +1,22 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    // output: 'standalone', // コメントアウト - standaloneモード無効化
+    // Azure App Service 最適化設定
     trailingSlash: false,
     images: {
-        unoptimized: true
+        unoptimized: true,
+        domains: []
     },
     compress: true,
     generateEtags: false,
-    poweredByHeader: false
-  /* config options here */
+    poweredByHeader: false,
+    // Azure での静的ファイル配信最適化
+    assetPrefix: '',
+    basePath: '',
+    experimental: {
+        // Azure での安定性向上
+        esmExternals: false
+    }
 };
 
 export default nextConfig;

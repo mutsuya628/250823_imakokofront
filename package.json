@@ -8,10 +8,12 @@
   },
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
+    "build": "next build", 
+    "start": "npx next start",
+    "start-custom": "node app.js",
     "lint": "next lint"
   },
+  "main": "app.js",
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.10",
     "express": "^5.1.0",

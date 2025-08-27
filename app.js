@@ -5,6 +5,8 @@ const path = require('path')
 const dev = process.env.NODE_ENV !== 'production'
 const port = process.env.PORT || 3000
 
+console.log(`Starting app in ${dev ? 'development' : 'production'} mode on port ${port}`)
+
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
@@ -32,4 +34,7 @@ app.prepare().then(() => {
     if (err) throw err
     console.log(`> Ready on http://localhost:${port}`)
   })
+}).catch((ex) => {
+  console.error('Error starting Next.js app:', ex)
+  process.exit(1)
 })
