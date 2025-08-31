@@ -48,15 +48,10 @@ export default function MapSearch({ onResults }: MapSearchProps) {
   useEffect(() => {
     const initMap = async () => {
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-      console.log('MapSearch - Environment check:', {
-        nodeEnv: process.env.NODE_ENV,
-        hasApiKey: !!apiKey,
-        apiKeyLength: apiKey?.length || 0
-      });
+      console.log('MapSearch - Google Maps API Key available:', !!apiKey);
       
       if (!apiKey) {
         console.error('MapSearch - Google Maps API key is not available');
-        console.error('MapSearch - Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY environment variable');
         return;
       }
 

@@ -13,27 +13,8 @@ export default function Map({ address, spaceName }: MapProps) {
 
   useEffect(() => {
     const initMap = async () => {
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-      
-      if (!apiKey) {
-        console.error('Map - Google Maps API key is not available');
-        console.error('Map - Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY environment variable');
-        // APIキーがない場合は地図を表示しない
-        if (mapRef.current) {
-          mapRef.current.innerHTML = `
-            <div class="flex items-center justify-center h-full bg-gray-100 text-gray-600">
-              <div class="text-center">
-                <p class="text-lg font-medium">地図を表示できません</p>
-                <p class="text-sm">Google Maps API Keyが設定されていません</p>
-              </div>
-            </div>
-          `;
-        }
-        return;
-      }
-
       const loader = new Loader({
-        apiKey: apiKey,
+        apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
         version: 'weekly',
       });
 
