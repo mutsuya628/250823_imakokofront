@@ -27,6 +27,7 @@ jobs:
       - name: Install dependencies and build
         env:
           NEXT_PUBLIC_API_BASE: ${{ secrets.NEXT_PUBLIC_API_BASE }}
+          NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
         run: |
           set -euxo pipefail
           npm ci || npm install --legacy-peer-deps
