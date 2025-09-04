@@ -110,12 +110,12 @@ export async function searchSpaces(payload: SearchParams): Promise<SpaceResult[]
   }
   const results = await r.json();
   
-  // デバッグログ: 重複チェック
-  console.log('API Response:', results);
+  // デバッグログ: 重複チェック (本番では非表示)
+  // console.log('API Response:', results);
   const spaceIds = results.map((r: SpaceResult) => r.space_id);
   const uniqueSpaceIds = [...new Set(spaceIds)];
-  console.log('Total results:', results.length);
-  console.log('Unique space IDs:', uniqueSpaceIds.length);
+  // console.log('Total results:', results.length);
+  // console.log('Unique space IDs:', uniqueSpaceIds.length);
   if (spaceIds.length !== uniqueSpaceIds.length) {
     console.warn('重複したspace_idが検出されました:', spaceIds);
   }
@@ -127,7 +127,9 @@ export async function searchSpaces(payload: SearchParams): Promise<SpaceResult[]
     );
   });
   
-  console.log('After deduplication:', uniqueResults.length);
+  // console.log('After deduplication:', uniqueResults.length);
+  
+  return uniqueResults;
   
   return uniqueResults;
 }

@@ -48,7 +48,7 @@ export default function MapSearch({ onResults }: MapSearchProps) {
   useEffect(() => {
     const initMap = async () => {
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-      console.log('MapSearch - Google Maps API Key available:', !!apiKey);
+      // console.log('MapSearch - Google Maps API Key available:', !!apiKey);
       
       if (!apiKey) {
         console.error('MapSearch - Google Maps API key is not available');
