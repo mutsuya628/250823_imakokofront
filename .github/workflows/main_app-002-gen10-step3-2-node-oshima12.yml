@@ -82,6 +82,25 @@ jobs:
             echo "✅ Public files copied successfully"
           fi
 
+          # src ディレクトリをコピー（重要：Azureビルド時に必要）
+          if [ -d "src" ]; then
+            mkdir -p deploy/src
+            cp -r src/* deploy/src/
+            echo "✅ src directory copied successfully"
+          fi
+
+          # package.json をコピー（ルートの設定情報）
+          if [ -f "package.json" ]; then
+            cp package.json deploy/package.json
+            echo "✅ Root package.json copied successfully"
+          fi
+
+          # next.config.js をコピー
+          if [ -f "next.config.js" ]; then
+            cp next.config.js deploy/next.config.js
+            echo "✅ next.config.js copied successfully"
+          fi
+
           # コピー結果の確認
           echo "--- Deploy directory structure ---"
           ls -la deploy | head -20
@@ -89,6 +108,8 @@ jobs:
           ls -la deploy/.next/static | head -10 || echo "No static directory"
           echo "--- Public directory check ---"
           ls -la deploy/public | head -10 || echo "No public directory"
+          echo "--- Src directory check ---"
+          ls -la deploy/src | head -10 || echo "No src directory"
 
       - name: Create deploy zip
         run: |
