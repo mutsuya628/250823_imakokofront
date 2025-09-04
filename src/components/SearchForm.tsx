@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getPlanTypes, searchSpaces } from '@/lib/api';
+import { getPlanTypes, searchSpaces } from '../lib/api';
 
 type Result = {
   space_id: string;

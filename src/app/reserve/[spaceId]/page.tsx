@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
 import { useEffect, useState } from "react";
-import { getSpace, createReservation } from "@/lib/api";
+import { getSpace, createReservation } from "../../../lib/api";
 // 修正 by M. Tanabe - 地図・画像表示機能追加
 import { useRouter } from "next/navigation";
-import Map from "@/components/Map";
+import Map from "../../../components/Map";
 import Image from "next/image";
 
 type Space = {

@@ -2,7 +2,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
-import { searchSpaces } from '@/lib/api';
+import { searchSpaces } from '../lib/api';
 
 interface MapSearchProps {
   onResults: (results: SpaceResult[]) => void;

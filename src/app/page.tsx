@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
-import ShimanamiHero from "@/components/ShimanamiHero";
-import SearchForm from "@/components/SearchForm";
-import MapSearch from "@/components/MapSearch";
-import SpaceCard from "@/components/SpaceCard";
+import ShimanamiHero from "../components/ShimanamiHero";
+import SearchForm from "../components/SearchForm";
+import MapSearch from "../components/MapSearch";
+import SpaceCard from "../components/SpaceCard";
 
 type SpaceResult = {
   space_id: string;
