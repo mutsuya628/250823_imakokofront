@@ -81,6 +81,21 @@ jobs:
             cp -a public deploy/
           fi
 
+          # src ディレクトリ（Next.js App Router の場合必須）
+          if [ -d "src" ]; then
+            echo "Copying src directory..."
+            cp -a src deploy/
+            echo "✅ src directory copied"
+          else
+            echo "❌ src directory not found"
+            exit 1
+          fi
+
+          # 設定ファイル類
+          cp next.config.ts deploy/ 2>/dev/null || cp next.config.js deploy/ 2>/dev/null || echo "No next.config found"
+          cp tsconfig.json deploy/ 2>/dev/null || echo "No tsconfig.json found"
+          cp postcss.config.mjs deploy/ 2>/dev/null || echo "No postcss.config found"
+
           # 実行に必要な package.json と node_modules
           cp package.json deploy/
           cp -a node_modules deploy/
