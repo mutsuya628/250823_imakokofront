@@ -92,7 +92,7 @@ jobs:
           fi
 
           # 設定ファイル類
-          cp next.config.ts deploy/ 2>/dev/null || cp next.config.js deploy/ 2>/dev/null || echo "No next.config found"
+          cp next.config.js deploy/ 2>/dev/null || cp next.config.ts deploy/ 2>/dev/null || echo "No next.config found"
           cp tsconfig.json deploy/ 2>/dev/null || echo "No tsconfig.json found"
           cp postcss.config.mjs deploy/ 2>/dev/null || echo "No postcss.config found"
 
