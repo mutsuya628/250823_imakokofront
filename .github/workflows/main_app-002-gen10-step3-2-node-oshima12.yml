@@ -53,38 +53,45 @@ jobs:
           rm -rf deploy
           mkdir -p deploy
 
-          # Standalone ビルド成果物をコピー（ルートに配置）
-          echo "Copying standalone build..."
+          # 🎯 Next.js Standalone 3点セット正攻法
+          echo "=== Next.js Standalone 3-Tier Setup ==="
+          
+          # 1. Standalone ビルド成果物をコピー（ルートに配置）
+          echo "1. Copying .next/standalone contents to root..."
           if [ -d ".next/standalone" ]; then
             echo "✅ .next/standalone directory exists"
             cp -r .next/standalone/* deploy/
-            echo "✅ Standalone files copied to root successfully"
+            echo "✅ Standalone files copied to root (server.js, package.json, node_modules, .next/)"
           else
             echo "❌ .next/standalone directory does not exist"
             exit 1
           fi
 
-          # Static files をコピー（CSS重要！）
-          echo "Copying static files..."
+          # 2. 🎯 .next/static を同階層に配置（上書き防止）
+          echo "2. Copying .next/static to root level..."
           if [ -d ".next/static" ]; then
-            mkdir -p deploy/.next/static
-            cp -r .next/static/* deploy/.next/static/
-            echo "✅ Static files copied successfully"
-            
-            # CSS ファイル確認
-            echo "=== CSS Files Check ==="
-            find .next/static -name "*.css" | head -10 || echo "No CSS files found"
-            echo "========================"
+            # standaloneの.next/staticが既にあるかチェック
+            if [ -d "deploy/.next/static" ]; then
+              echo "⚠️  .next/static already exists in standalone, merging..."
+              cp -r .next/static/* deploy/.next/static/
+            else
+              echo "Creating .next/static at root level..."
+              mkdir -p deploy/.next/static
+              cp -r .next/static/* deploy/.next/static/
+            fi
+            echo "✅ .next/static placed at correct level"
           else
             echo "❌ .next/static directory does not exist"
             exit 1
           fi
 
-          # Public ディレクトリをコピー
+          # 3. 🎯 public を同階層に配置
+          echo "3. Copying public to root level..."
           if [ -d "public" ]; then
-            mkdir -p deploy/public
-            cp -r public/* deploy/public/
-            echo "✅ Public files copied successfully"
+            cp -r public deploy/public
+            echo "✅ public directory placed at correct level"
+          else
+            echo "⚠️  No public directory found"
           fi
 
           # 🎯 重要：Azure再ビルド防止のため src を含める
@@ -102,21 +109,28 @@ jobs:
           cp postcss.config.mjs deploy/ 2>/dev/null || echo "postcss.config.mjs not found"
           cp tsconfig.json deploy/ 2>/dev/null || echo "tsconfig.json not found"
 
-          # 重要：deployの最終構造確認
-          echo "=== Final Deploy Structure Check ==="
-          echo "Root files:"
-          ls -la deploy/ | grep -E "\.(js|json)$" || echo "No root JS/JSON files"
-          echo "server.js check:"
-          ls -la deploy/server.js || echo "❌ server.js missing in root"
-          echo "Static CSS check:"
-          find deploy/.next/static -name "*.css" | head -5 || echo "No CSS files in deploy"
-          echo "Public files check:"
-          ls deploy/public/ | head -10 || echo "No public files"
+          # 重要：Next.js Standalone 3点セット検証
+          echo "=== Next.js Standalone 3-Tier Validation ==="
+          echo "🎯 Checking 3-tier structure compliance..."
+          
+          echo "1. Root level server.js:"
+          ls -la deploy/server.js && echo "✅ server.js at root" || echo "❌ server.js missing"
+          
+          echo "2. Root level .next/static:"
+          ls -la deploy/.next/static/ | head -3 && echo "✅ .next/static at root level" || echo "❌ .next/static missing"
+          
+          echo "3. Root level public:"
+          ls -la deploy/public/ | head -3 && echo "✅ public at root level" || echo "❌ public missing"
+          
+          echo "🎯 Critical CSS validation:"
+          find deploy/.next/static -name "*.css" | head -3 || echo "❌ No CSS files found"
+          
+          echo "🎯 Structure summary:"
+          echo "deploy/"
+          echo "├── server.js $(test -f deploy/server.js && echo '✅' || echo '❌')"
+          echo "├── .next/static/ $(test -d deploy/.next/static && echo '✅' || echo '❌')"
+          echo "└── public/ $(test -d deploy/public && echo '✅' || echo '❌')"
           echo "================================="
-          echo "--- Src directory check ---"
-          ls -la deploy/src | head -10 || echo "No src directory"
-          echo "--- Public static check ---"
-          ls -la deploy/public/_next/static | head -10 || echo "No public static directory"
 
       - name: Create deploy zip
         run: |
