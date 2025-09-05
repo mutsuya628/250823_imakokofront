@@ -112,15 +112,6 @@ jobs:
             echo "✅ tsconfig.json copied successfully"
           fi
 
-          # Standalone モード対応：static ファイルを public として配置
-          echo "Setting up static files for standalone mode..."
-          if [ -d ".next/static" ]; then
-            # deploy 内の .next/static から public への追加コピー（standaloneモード対応）
-            mkdir -p deploy/public/_next/static
-            cp -r .next/static/* deploy/public/_next/static/
-            echo "✅ Static files also copied to public/_next/static for standalone mode"
-          fi
-
           # コピー結果の確認
           echo "--- Deploy directory structure ---"
           ls -la deploy | head -20

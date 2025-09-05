@@ -18,6 +18,10 @@ const nextConfig = {
         optimizeCss: false,
     },
     
+    // 静的ファイル配信設定（Standalone モード対応）
+    assetPrefix: '',
+    distDir: '.next',
+    
     // 環境変数を明示的にクライアントサイドに公開
     env: {
         NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
