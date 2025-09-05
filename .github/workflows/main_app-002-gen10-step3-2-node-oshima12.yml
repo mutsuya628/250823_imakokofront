@@ -87,6 +87,21 @@ jobs:
             echo "✅ Public files copied successfully"
           fi
 
+          # 🎯 重要：Azure再ビルド防止のため src を含める
+          echo "Copying src directory for Azure compatibility..."
+          if [ -d "src" ]; then
+            cp -r src deploy/src
+            echo "✅ Src directory copied for Azure build compatibility"
+          fi
+
+          # 設定ファイルもコピー（Azure再ビルド用）
+          echo "Copying config files..."
+          cp package.json deploy/ 2>/dev/null || echo "package.json already copied"
+          cp next.config.js deploy/ 2>/dev/null || echo "next.config.js not found"
+          cp next.config.ts deploy/ 2>/dev/null || echo "next.config.ts not found"
+          cp postcss.config.mjs deploy/ 2>/dev/null || echo "postcss.config.mjs not found"
+          cp tsconfig.json deploy/ 2>/dev/null || echo "tsconfig.json not found"
+
           # 重要：deployの最終構造確認
           echo "=== Final Deploy Structure Check ==="
           echo "Root files:"
