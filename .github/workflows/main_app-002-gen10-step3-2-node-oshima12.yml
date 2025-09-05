@@ -53,12 +53,12 @@ jobs:
           rm -rf deploy
           mkdir -p deploy
 
-          # Standalone ビルド成果物をコピー
+          # Standalone ビルド成果物をコピー（ルートに配置）
           echo "Copying standalone build..."
           if [ -d ".next/standalone" ]; then
             echo "✅ .next/standalone directory exists"
             cp -r .next/standalone/* deploy/
-            echo "✅ Standalone files copied successfully"
+            echo "✅ Standalone files copied to root successfully"
           else
             echo "❌ .next/standalone directory does not exist"
             exit 1
@@ -87,38 +87,17 @@ jobs:
             echo "✅ Public files copied successfully"
           fi
 
-          # src ディレクトリをコピー（重要：Azureビルド時に必要）
-          if [ -d "src" ]; then
-            mkdir -p deploy/src
-            cp -r src/* deploy/src/
-            echo "✅ src directory copied successfully"
-          fi
-
-          # package.json をコピー（ルートの設定情報）
-          if [ -f "package.json" ]; then
-            cp package.json deploy/package.json
-            echo "✅ Root package.json copied successfully"
-          fi
-
-          # next.config.js をコピー
-          if [ -f "next.config.js" ]; then
-            cp next.config.js deploy/next.config.js
-            echo "✅ next.config.js copied successfully"
-          fi
-          
-          # tsconfig.json をコピー（必要に応じて）
-          if [ -f "tsconfig.json" ]; then
-            cp tsconfig.json deploy/tsconfig.json
-            echo "✅ tsconfig.json copied successfully"
-          fi
-
-          # コピー結果の確認
-          echo "--- Deploy directory structure ---"
-          ls -la deploy | head -20
-          echo "--- Static directory check ---"
-          ls -la deploy/.next/static | head -10 || echo "No static directory"
-          echo "--- Public directory check ---"
-          ls -la deploy/public | head -10 || echo "No public directory"
+          # 重要：deployの最終構造確認
+          echo "=== Final Deploy Structure Check ==="
+          echo "Root files:"
+          ls -la deploy/ | grep -E "\.(js|json)$" || echo "No root JS/JSON files"
+          echo "server.js check:"
+          ls -la deploy/server.js || echo "❌ server.js missing in root"
+          echo "Static CSS check:"
+          find deploy/.next/static -name "*.css" | head -5 || echo "No CSS files in deploy"
+          echo "Public files check:"
+          ls deploy/public/ | head -10 || echo "No public files"
+          echo "================================="
           echo "--- Src directory check ---"
           ls -la deploy/src | head -10 || echo "No src directory"
           echo "--- Public static check ---"
