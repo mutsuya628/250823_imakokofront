@@ -163,7 +163,15 @@ jobs:
           ls -la deploy/
 
       - name: List deploy folder (debug)
-        run: ls -R deploy | sed -n '1,400p'
+        run: |
+          echo "=== Deploy folder structure debug ==="
+          ls -la deploy/
+          echo "=== .next directory check ==="
+          ls -la deploy/.next/ || echo "❌ .next directory missing"
+          echo "=== server.js check ==="
+          ls -la deploy/server.js || echo "❌ server.js missing"
+          echo "=== Final verification ==="
+          find deploy -name "*.js" -o -name "*.css" | head -10
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -179,4 +187,6 @@ jobs:
           SCM_DO_BUILD_DURING_DEPLOYMENT: false
           ENABLE_ORYX_BUILD: false
           DISABLE_COLLECTSTATIC: 1
+          WEBSITE_NODE_DEFAULT_VERSION: '20.x'
+          WEBSITE_RUN_FROM_PACKAGE: 1
         timeout-minutes: 10
