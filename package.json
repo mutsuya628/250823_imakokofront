@@ -8,8 +8,8 @@
   },
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build", 
-    "start": "next start",
+    "build": "next build",
+    "start": "node server.js",
     "start-standalone": "node server.js",
     "start-custom": "node app.js",
     "dev-debug": "next dev --turbopack --port 3001",

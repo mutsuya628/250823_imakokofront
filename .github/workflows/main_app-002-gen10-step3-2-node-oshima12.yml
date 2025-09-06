@@ -108,15 +108,6 @@ jobs:
           cp next.config.ts deploy/ 2>/dev/null || echo "next.config.ts not found"
           cp postcss.config.mjs deploy/ 2>/dev/null || echo "postcss.config.mjs not found"
           cp tsconfig.json deploy/ 2>/dev/null || echo "tsconfig.json not found"
-          cp web.config deploy/ 2>/dev/null || echo "web.config not found"
-
-          # 🎯 Azure Static Assets確実配信のためのバックアップ策
-          echo "Creating static assets backup in public..."
-          if [ -d "deploy/.next/static" ]; then
-            mkdir -p deploy/public/_next
-            cp -r deploy/.next/static deploy/public/_next/
-            echo "✅ Static assets backed up to public/_next/static"
-          fi
 
           # 重要：Next.js Standalone 3点セット検証
           echo "=== Next.js Standalone 3-Tier Validation ==="
@@ -133,17 +124,6 @@ jobs:
           
           echo "🎯 Critical CSS validation:"
           find deploy/.next/static -name "*.css" | head -3 || echo "❌ No CSS files found"
-          
-          echo "🎯 Detailed CSS file analysis:"
-          if find deploy/.next/static -name "*.css" | head -1 > /dev/null; then
-            CSS_FILE=$(find deploy/.next/static -name "*.css" | head -1)
-            echo "Found CSS file: $CSS_FILE"
-            echo "CSS file size: $(ls -lh $CSS_FILE | awk '{print $5}')"
-            echo "CSS first 5 lines:"
-            head -5 "$CSS_FILE" || echo "Cannot read CSS file"
-            echo "CSS contains Tailwind classes check:"
-            grep -o "bg-\|text-\|flex\|grid" "$CSS_FILE" | head -5 || echo "No Tailwind classes found"
-          fi
           
           echo "🎯 Structure summary:"
           echo "deploy/"
