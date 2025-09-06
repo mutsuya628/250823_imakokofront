@@ -33,7 +33,7 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-# Note: next-env.d.ts should NOT be ignored as it contains Next.js TypeScript types
+next-env.d.ts
 
 # python
 *.pyc

@@ -94,9 +94,20 @@ jobs:
             echo "⚠️  No public directory found"
           fi
 
-          # 注意：Next.js standaloneビルドには必要なファイルが全て含まれているため
-          # srcディレクトリや設定ファイルの追加コピーは不要（セキュリティとサイズ最適化のため削除）
-          echo "✅ Skipping unnecessary file copies - standalone build is self-contained"
+          # 🎯 重要：Azure再ビルド防止のため src を含める
+          echo "Copying src directory for Azure compatibility..."
+          if [ -d "src" ]; then
+            cp -r src deploy/src
+            echo "✅ Src directory copied for Azure build compatibility"
+          fi
+
+          # 設定ファイルもコピー（Azure再ビルド用）
+          echo "Copying config files..."
+          cp package.json deploy/ 2>/dev/null || echo "package.json already copied"
+          cp next.config.js deploy/ 2>/dev/null || echo "next.config.js not found"
+          cp next.config.ts deploy/ 2>/dev/null || echo "next.config.ts not found"
+          cp postcss.config.mjs deploy/ 2>/dev/null || echo "postcss.config.mjs not found"
+          cp tsconfig.json deploy/ 2>/dev/null || echo "tsconfig.json not found"
 
           # 重要：Next.js Standalone 3点セット検証
           echo "=== Next.js Standalone 3-Tier Validation ==="
@@ -163,15 +174,7 @@ jobs:
           ls -la deploy/
 
       - name: List deploy folder (debug)
-        run: |
-          echo "=== Deploy folder structure debug ==="
-          ls -la deploy/
-          echo "=== .next directory check ==="
-          ls -la deploy/.next/ || echo "❌ .next directory missing"
-          echo "=== server.js check ==="
-          ls -la deploy/server.js || echo "❌ server.js missing"
-          echo "=== Final verification ==="
-          find deploy -name "*.js" -o -name "*.css" | head -10
+        run: ls -R deploy | sed -n '1,400p'
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -182,11 +185,5 @@ jobs:
           package: ./deploy/
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5A79C044C5434698A9917972C64F6C7B }}
           clean: true
-          restart: true
-        env:
-          SCM_DO_BUILD_DURING_DEPLOYMENT: false
-          ENABLE_ORYX_BUILD: false
-          DISABLE_COLLECTSTATIC: 1
-          WEBSITE_NODE_DEFAULT_VERSION: '20.x'
-          WEBSITE_RUN_FROM_PACKAGE: 1
-        timeout-minutes: 10
+          restart: false
+        timeout-minutes: 20

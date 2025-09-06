@@ -9,7 +9,6 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "build-message": "echo 'Build already completed in CI/CD pipeline'",
     "start": "node server.js",
     "start-standalone": "node server.js",
     "start-custom": "node app.js",
